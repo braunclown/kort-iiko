@@ -1,0 +1,5 @@
+@import url('./main-layout.css');
+@import url('./views/dishes-view.css');
+@import url('./views/periods-view.css');
+@import url('./views/stable-periods-view.css');
+@import url('./views/users-view.css');
