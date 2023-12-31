@@ -13,6 +13,7 @@ public class Dish extends AbstractEntity {
     private Double multiplicity;
     private Double initialAmount;
     private Mode mode;
+    private String measure;
 
     public String getName() {
         return name;
@@ -60,5 +61,13 @@ public class Dish extends AbstractEntity {
 
     public void setMode(Mode mode) {
         this.mode = mode;
+    }
+
+    public String getMeasure() {
+        return measure;
+    }
+
+    public void setMeasure(String measure) {
+        this.measure = measure;
     }
 }
