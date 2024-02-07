@@ -1,7 +1,8 @@
 package com.braunclown.kortiiko.data;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "dish")
@@ -9,11 +10,17 @@ public class Dish extends AbstractEntity {
 
     private String name;
     private Double amount;
+    @Column(unique = true)
     private String iikoId;
     private Double multiplicity;
     private Double initialAmount;
     private Mode mode;
     private String measure;
+    private Boolean isGroup;
+    @ManyToOne
+    private Dish parentGroup;
+    @OneToMany(mappedBy = "parentGroup")
+    private Set<Dish> childDishes;
 
     public String getName() {
         return name;
@@ -69,5 +76,29 @@ public class Dish extends AbstractEntity {
 
     public void setMeasure(String measure) {
         this.measure = measure;
+    }
+
+    public Boolean getGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(Boolean group) {
+        isGroup = group;
+    }
+
+    public Dish getParentGroup() {
+        return parentGroup;
+    }
+
+    public void setParentGroup(Dish parentGroup) {
+        this.parentGroup = parentGroup;
+    }
+
+    public Set<Dish> getChildDishes() {
+        return childDishes;
+    }
+
+    public void setChildDishes(Set<Dish> childDishes) {
+        this.childDishes = childDishes;
     }
 }

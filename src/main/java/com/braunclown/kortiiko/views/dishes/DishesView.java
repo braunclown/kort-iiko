@@ -26,15 +26,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @PageTitle("Dishes")
 @Route(value = "dishes", layout = MainLayout.class)
@@ -43,7 +40,7 @@ import org.springframework.data.jpa.domain.Specification;
 public class DishesView extends Div {
 
     private Grid<SamplePerson> grid;
-
+    private Button importDishesButton;
     private Filters filters;
     private final SamplePersonService samplePersonService;
 
@@ -53,7 +50,8 @@ public class DishesView extends Div {
         addClassNames("dishes-view");
 
         filters = new Filters(() -> refreshGrid());
-        VerticalLayout layout = new VerticalLayout(createMobileFilters(), filters, createGrid());
+        VerticalLayout layout = new VerticalLayout(createImportDishesButton(),
+                createMobileFilters(), filters, createGrid());
         layout.setSizeFull();
         layout.setPadding(false);
         layout.setSpacing(false);
@@ -216,6 +214,15 @@ public class DishesView extends Div {
             return expression;
         }
 
+    }
+
+    private Button createImportDishesButton() {
+        importDishesButton = new Button("Импортировать блюда из iiko");
+        importDishesButton.addClickListener(event -> {
+            ImportDishesDialog dialog = new ImportDishesDialog();
+            dialog.open();
+        });
+        return importDishesButton;
     }
 
     private Component createGrid() {
