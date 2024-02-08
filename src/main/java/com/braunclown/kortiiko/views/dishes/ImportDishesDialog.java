@@ -1,5 +1,8 @@
 package com.braunclown.kortiiko.views.dishes;
 
+import com.braunclown.kortiiko.services.DishService;
+import com.braunclown.kortiiko.services.iiko.DishImportService;
+import com.braunclown.kortiiko.services.iiko.IikoProperties;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -13,8 +16,12 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 public class ImportDishesDialog extends Dialog {
     private Button closeButton;
     private Button importButton;
+    private final DishService dishService;
+    private final IikoProperties iikoProperties;
 
-    public ImportDishesDialog() {
+    public ImportDishesDialog(DishService dishService, IikoProperties iikoProperties) {
+        this.dishService = dishService;
+        this.iikoProperties = iikoProperties;
         setCloseOnEsc(false);
         setCloseOnOutsideClick(false);
         setHeaderTitle("Импортировать номенклатуру из iiko?");
@@ -52,6 +59,17 @@ public class ImportDishesDialog extends Dialog {
     }
 
     private void importDishes() {
-        // TODO: Вызов сервиса импорта блюд
+        getFooter().remove(closeButton, importButton);
+        DishImportService dishImportService = new DishImportService(dishService, iikoProperties);
+        dishImportService.importDishesAndGroups();
+        Dialog dialog = new Dialog("Импорт завершён");
+        Button closeButton = new Button("Закрыть");
+        closeButton.addClickListener(event -> {
+            dialog.close();
+            this.close();
+        });
+        dialog.getFooter().add(closeButton);
+        dialog.open();
+
     }
 }

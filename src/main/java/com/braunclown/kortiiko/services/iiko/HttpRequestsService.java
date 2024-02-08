@@ -10,13 +10,13 @@ import java.time.Duration;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
-public class httpRequestsService {
+public class HttpRequestsService {
 
-    private static HttpResponse<String> sendGetRequest(String address) throws URISyntaxException, IOException, InterruptedException {
+    public static HttpResponse<String> sendGetRequest(String address) throws URISyntaxException, IOException, InterruptedException {
         HttpRequest request = HttpRequest
                 .newBuilder(new URI(address))
                 .GET()
-                .timeout(Duration.of(30, SECONDS))
+                .timeout(Duration.of(90, SECONDS))
                 .build();
         return HttpClient
                 .newBuilder()
@@ -24,12 +24,12 @@ public class httpRequestsService {
                 .send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private static HttpResponse<String> sendPostRequest(String address, HttpRequest.BodyPublisher body)
+    public static HttpResponse<String> sendPostRequest(String address, HttpRequest.BodyPublisher body)
             throws IOException, InterruptedException, URISyntaxException {
         HttpRequest request = HttpRequest
                 .newBuilder(new URI(address))
                 .POST(body)
-                .timeout(Duration.of(30, SECONDS))
+                .timeout(Duration.of(90, SECONDS))
                 .header("Content-type", "Application/json; charset=utf-8")
                 .build();
         return HttpClient

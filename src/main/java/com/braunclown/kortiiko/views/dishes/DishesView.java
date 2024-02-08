@@ -1,7 +1,9 @@
 package com.braunclown.kortiiko.views.dishes;
 
 import com.braunclown.kortiiko.data.SamplePerson;
+import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.SamplePersonService;
+import com.braunclown.kortiiko.services.iiko.IikoProperties;
 import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
@@ -43,8 +45,12 @@ public class DishesView extends Div {
     private Button importDishesButton;
     private Filters filters;
     private final SamplePersonService samplePersonService;
+    private final DishService dishService;
+    private final IikoProperties iikoProperties;
 
-    public DishesView(SamplePersonService SamplePersonService) {
+    public DishesView(DishService dishService, IikoProperties iikoProperties, SamplePersonService SamplePersonService) {
+        this.dishService = dishService;
+        this.iikoProperties = iikoProperties;
         this.samplePersonService = SamplePersonService;
         setSizeFull();
         addClassNames("dishes-view");
@@ -219,7 +225,7 @@ public class DishesView extends Div {
     private Button createImportDishesButton() {
         importDishesButton = new Button("Импортировать блюда из iiko");
         importDishesButton.addClickListener(event -> {
-            ImportDishesDialog dialog = new ImportDishesDialog();
+            ImportDishesDialog dialog = new ImportDishesDialog(dishService, iikoProperties);
             dialog.open();
         });
         return importDishesButton;

@@ -22,12 +22,20 @@ public class DishService {
         return repository.findById(id);
     }
 
+    public Dish getByIikoId(String iikoId) {
+        return repository.findByIikoId(iikoId);
+    }
+
     public Dish update(Dish entity) {
         return repository.save(entity);
     }
 
     public void delete(Long id) {
         repository.deleteById(id);
+    }
+
+    public void deleteAll() {
+        repository.deleteAll();
     }
 
     public Page<Dish> list(Pageable pageable) {
