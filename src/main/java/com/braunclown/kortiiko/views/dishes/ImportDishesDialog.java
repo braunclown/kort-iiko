@@ -16,6 +16,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 public class ImportDishesDialog extends Dialog {
     private Button closeButton;
     private Button importButton;
+    private HorizontalLayout footerLayout;
     private final DishService dishService;
     private final IikoProperties iikoProperties;
 
@@ -26,7 +27,8 @@ public class ImportDishesDialog extends Dialog {
         setCloseOnOutsideClick(false);
         setHeaderTitle("Импортировать номенклатуру из iiko?");
         add(createWarning());
-        getFooter().add(createFooterLayout());
+        footerLayout = createFooterLayout();
+        getFooter().add(footerLayout);
     }
 
     private VerticalLayout createWarning() {
@@ -59,10 +61,12 @@ public class ImportDishesDialog extends Dialog {
     }
 
     private void importDishes() {
-        getFooter().remove(closeButton, importButton);
+        footerLayout.remove(closeButton, importButton);
         DishImportService dishImportService = new DishImportService(dishService, iikoProperties);
         dishImportService.importDishesAndGroups();
         Dialog dialog = new Dialog("Импорт завершён");
+        dialog.setCloseOnOutsideClick(false);
+        dialog.setCloseOnEsc(false);
         Button closeButton = new Button("Закрыть");
         closeButton.addClickListener(event -> {
             dialog.close();
