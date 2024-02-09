@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,6 +45,18 @@ public class DishService {
 
     public Page<Dish> list(Pageable pageable, Specification<Dish> filter) {
         return repository.findAll(filter, pageable);
+    }
+
+    public List<Dish> findAll() {
+        return repository.findAll();
+    }
+
+    public List<Dish> findByParentGroup(Dish parentGroup) {
+        return repository.findByParentGroup(parentGroup);
+    }
+
+    public List<Dish> findRoots() {
+        return repository.findByParentGroupIsNull();
     }
 
     public int count() {

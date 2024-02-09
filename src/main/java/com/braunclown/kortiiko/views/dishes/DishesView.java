@@ -1,5 +1,7 @@
 package com.braunclown.kortiiko.views.dishes;
 
+import com.braunclown.kortiiko.data.Dish;
+import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.data.SamplePerson;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.SamplePersonService;
@@ -12,6 +14,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -23,6 +26,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -34,14 +38,17 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @PageTitle("Dishes")
 @Route(value = "dishes", layout = MainLayout.class)
 @AnonymousAllowed
 @Uses(Icon.class)
+@CssImport(value = "./themes/kort-iiko/dish-grid.css", themeFor = "vaadin-grid")
 public class DishesView extends Div {
 
     private Grid<SamplePerson> grid;
+    private TreeGrid<Dish> treeGrid;
     private Button importDishesButton;
     private Filters filters;
     private final SamplePersonService samplePersonService;
@@ -54,10 +61,11 @@ public class DishesView extends Div {
         this.samplePersonService = SamplePersonService;
         setSizeFull();
         addClassNames("dishes-view");
-
+        // TODO: Сделать отображение блюд при помощи TreeGrid + фильтры + редактирование блюд
         filters = new Filters(() -> refreshGrid());
+        createGrid(); // Потом убрать
         VerticalLayout layout = new VerticalLayout(createImportDishesButton(),
-                createMobileFilters(), filters, createGrid());
+                createMobileFilters(), filters, createTreeGrid());
         layout.setSizeFull();
         layout.setPadding(false);
         layout.setSpacing(false);
@@ -222,13 +230,13 @@ public class DishesView extends Div {
 
     }
 
-    private Button createImportDishesButton() {
+    private Component createImportDishesButton() {
         importDishesButton = new Button("Импортировать блюда из iiko");
         importDishesButton.addClickListener(event -> {
             ImportDishesDialog dialog = new ImportDishesDialog(dishService, iikoProperties);
             dialog.open();
         });
-        return importDishesButton;
+        return new Div(importDishesButton);
     }
 
     private Component createGrid() {
@@ -248,6 +256,41 @@ public class DishesView extends Div {
         grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
 
         return grid;
+    }
+
+    private Component createTreeGrid() {
+        treeGrid = new TreeGrid<>();
+        List<Dish> roots = dishService.findRoots();
+        treeGrid.setItems(roots, this::getChildren);
+
+        treeGrid.addHierarchyColumn(Dish::getName).setHeader("Название")
+                .setAutoWidth(true).setFlexGrow(1).setResizable(true);
+        treeGrid.addColumn(Dish::getInitialAmount).setHeader("Остатки по умолчанию");
+        treeGrid.addColumn(Dish::getAmount).setHeader("Остатки");
+        treeGrid.addColumn(Dish::getMeasure).setHeader("Ед. измерения");
+        treeGrid.addColumn(Dish::getMultiplicity).setHeader("Кратность");
+        treeGrid.addComponentColumn(dish ->
+                new Span(dish.getMode() == Mode.MAX ? "До макс." : "Продажи")).setHeader("Режим пополнения");
+        treeGrid.addComponentColumn(dish -> {
+            Button button = new Button("Редактировать", event -> {
+                EditDishDialog editDishDialog = new EditDishDialog(dish, dishService);
+                editDishDialog.open();
+            });
+            button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+            return button;
+        });
+
+        treeGrid.setClassNameGenerator(dish -> dish.getGroup() ? "group-style" : null);
+        treeGrid.addClassName("dish-tree-grid");
+        treeGrid.addThemeVariants(GridVariant.LUMO_COMPACT);
+        treeGrid.expandRecursively(roots, 3);
+        treeGrid.getHeaderRows().getFirst();
+        treeGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        return treeGrid;
+    }
+
+    public Set<Dish> getChildren(Dish dish) {
+        return dish.getChildDishes();
     }
 
     private void refreshGrid() {

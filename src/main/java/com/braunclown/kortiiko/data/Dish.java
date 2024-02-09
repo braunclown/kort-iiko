@@ -19,7 +19,7 @@ public class Dish extends AbstractEntity {
     private Boolean isGroup;
     @ManyToOne
     private Dish parentGroup;
-    @OneToMany(mappedBy = "parentGroup")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parentGroup")
     private Set<Dish> childDishes;
 
     public String getName() {
