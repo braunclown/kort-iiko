@@ -59,6 +59,10 @@ public class DishService {
         return repository.findByParentGroupIsNull();
     }
 
+    public List<Dish> findGroups() {
+        return repository.findByIsGroupTrue();
+    }
+
     public int count() {
         return (int) repository.count();
     }

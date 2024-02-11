@@ -40,6 +40,19 @@ public class DishImportService {
         }
     }
 
+    public String getIikoId(String name) {
+        try {
+            IikoConnectionService service = new IikoConnectionService(iikoProperties);
+            String token = service.login();
+            String dishJson = service.requestDishes(token);
+            String groupJson = service.requestGroups(token);
+            service.logout(token);
+            return getIikoIdByName(dishJson, groupJson, name);
+        } catch (URISyntaxException | InterruptedException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void parseGroups(String json) {
         List<GroupPrototype> groupList = new ArrayList<>();
         JsonArray groups = JsonParser.parseString(json).getAsJsonArray();
@@ -103,5 +116,21 @@ public class DishImportService {
             }
             dishService.update(dish);
         }
+    }
+
+    private String getIikoIdByName(String dishJson, String groupJson, String name) {
+        for (JsonElement dishElement: JsonParser.parseString(dishJson).getAsJsonArray()) {
+            JsonObject dishObject = dishElement.getAsJsonObject();
+            if (dishObject.get("name").getAsString().equals(name)) {
+                return dishObject.get("id").getAsString();
+            }
+        }
+        for (JsonElement groupElement: JsonParser.parseString(groupJson).getAsJsonArray()) {
+            JsonObject groupObject = groupElement.getAsJsonObject();
+            if (groupObject.get("name").getAsString().equals(name)) {
+                return groupObject.get("id").getAsString();
+            }
+        }
+        return "Не найдено";
     }
 }

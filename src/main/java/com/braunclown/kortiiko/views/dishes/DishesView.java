@@ -273,7 +273,7 @@ public class DishesView extends Div {
                 new Span(dish.getMode() == Mode.MAX ? "До макс." : "Продажи")).setHeader("Режим пополнения");
         treeGrid.addComponentColumn(dish -> {
             Button button = new Button("Редактировать", event -> {
-                EditDishDialog editDishDialog = new EditDishDialog(dish, dishService);
+                EditDishDialog editDishDialog = new EditDishDialog(dish, dishService, iikoProperties);
                 editDishDialog.open();
             });
             button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
