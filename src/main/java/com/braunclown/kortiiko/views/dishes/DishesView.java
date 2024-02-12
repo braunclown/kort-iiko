@@ -21,6 +21,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -50,6 +51,7 @@ public class DishesView extends Div {
     private Grid<SamplePerson> grid;
     private TreeGrid<Dish> treeGrid;
     private Button importDishesButton;
+    private Button refreshTreeGridButton;
     private Filters filters;
     private final SamplePersonService samplePersonService;
     private final DishService dishService;
@@ -64,19 +66,25 @@ public class DishesView extends Div {
         // TODO: Сделать отображение блюд при помощи TreeGrid + фильтры + редактирование блюд
         filters = new Filters(() -> refreshGrid());
         createGrid(); // Потом убрать
-        VerticalLayout layout = new VerticalLayout(createImportDishesButton(),
-                createMobileFilters(), filters, createTreeGrid());
+        VerticalLayout layout = new VerticalLayout(
+                createMainMenu(), createMobileFilters(), filters, createTreeGrid());
         layout.setSizeFull();
         layout.setPadding(false);
         layout.setSpacing(false);
         add(layout);
     }
 
+    private HorizontalLayout createMainMenu() {
+        HorizontalLayout menuLayout = new HorizontalLayout(createImportDishesButton(), createRefreshTreeGridButton());
+        menuLayout.addClassNames(LumoUtility.Padding.Vertical.XSMALL, LumoUtility.Padding.Horizontal.MEDIUM);
+        return menuLayout;
+    }
+
     private HorizontalLayout createMobileFilters() {
         // Mobile version
         HorizontalLayout mobileFilters = new HorizontalLayout();
         mobileFilters.setWidthFull();
-        mobileFilters.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER,
+        mobileFilters.addClassNames(LumoUtility.Padding.XSMALL, LumoUtility.BoxSizing.BORDER,
                 LumoUtility.AlignItems.CENTER);
         mobileFilters.addClassName("mobile-filters");
 
@@ -109,7 +117,7 @@ public class DishesView extends Div {
 
             setWidthFull();
             addClassName("filter-layout");
-            addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM,
+            addClassNames(LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Padding.Vertical.XSMALL,
                     LumoUtility.BoxSizing.BORDER);
             name.setPlaceholder("First or last name");
 
@@ -231,12 +239,18 @@ public class DishesView extends Div {
     }
 
     private Component createImportDishesButton() {
-        importDishesButton = new Button("Импортировать блюда из iiko");
+        importDishesButton = new Button("Импортировать блюда из iiko", new Icon(VaadinIcon.DOWNLOAD));
         importDishesButton.addClickListener(event -> {
             ImportDishesDialog dialog = new ImportDishesDialog(dishService, iikoProperties);
             dialog.open();
         });
-        return new Div(importDishesButton);
+        return importDishesButton;
+    }
+
+    private Component createRefreshTreeGridButton() {
+        refreshTreeGridButton = new Button("Обновить", new Icon(VaadinIcon.REFRESH));
+        refreshTreeGridButton.addClickListener(event -> refreshTreeGrid());
+        return refreshTreeGridButton;
     }
 
     private Component createGrid() {
@@ -277,16 +291,32 @@ public class DishesView extends Div {
                 editDishDialog.open();
             });
             button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+            button.setIcon(new Icon(VaadinIcon.EDIT));
             return button;
-        });
+        }).setHeader(createAddDishButton());
 
         treeGrid.setClassNameGenerator(dish -> dish.getGroup() ? "group-style" : null);
         treeGrid.addClassName("dish-tree-grid");
         treeGrid.addThemeVariants(GridVariant.LUMO_COMPACT);
         treeGrid.expandRecursively(roots, 3);
-        treeGrid.getHeaderRows().getFirst();
         treeGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         return treeGrid;
+    }
+
+    private Button createAddDishButton() {
+        Button button = new Button("Добавить", new Icon(VaadinIcon.PLUS), event -> {
+            AddDishDialog dialog = new AddDishDialog(dishService, iikoProperties);
+            dialog.open();
+        });
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        return button;
+    }
+
+    private void refreshTreeGrid() {
+        List<Dish> roots = dishService.findRoots();
+        treeGrid.setItems(roots, this::getChildren);
+        treeGrid.expandRecursively(roots, 3);
+        treeGrid.getDataProvider().refreshAll();
     }
 
     public Set<Dish> getChildren(Dish dish) {

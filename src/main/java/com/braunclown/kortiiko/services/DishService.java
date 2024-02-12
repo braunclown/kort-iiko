@@ -35,6 +35,13 @@ public class DishService {
         repository.deleteById(id);
     }
 
+    public void cascadeDelete(Dish dish) {
+        for (Dish child: dish.getChildDishes()) {
+            cascadeDelete(child);
+        }
+        delete(dish.getId());
+    }
+
     public void deleteAll() {
         repository.deleteAll();
     }
