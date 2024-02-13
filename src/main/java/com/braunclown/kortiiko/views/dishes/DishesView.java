@@ -124,12 +124,13 @@ public class DishesView extends Div {
         treeGrid.setItems(roots, this::getChildren);
         treeGrid.addHierarchyColumn(Dish::getName).setHeader("Название")
                 .setAutoWidth(true).setFlexGrow(1).setResizable(true);
-        treeGrid.addColumn(Dish::getInitialAmount).setHeader("Остатки по умолчанию");
-        treeGrid.addColumn(Dish::getAmount).setHeader("Остатки");
-        treeGrid.addColumn(Dish::getMeasure).setHeader("Ед. измерения");
-        treeGrid.addColumn(Dish::getMultiplicity).setHeader("Кратность");
+        treeGrid.addColumn(Dish::getInitialAmount).setHeader("Остатки по умолчанию").setSortable(true);
+        treeGrid.addColumn(Dish::getAmount).setHeader("Остатки").setSortable(true);
+        treeGrid.addColumn(Dish::getMeasure).setHeader("Ед. измерения").setSortable(true);
+        treeGrid.addColumn(Dish::getMultiplicity).setHeader("Кратность").setSortable(true);
         treeGrid.addComponentColumn(dish ->
-                new Span(dish.getMode() == Mode.MAX ? "До макс." : "Продажи")).setHeader("Режим пополнения");
+                new Span(dish.getMode() == Mode.MAX ? "До макс." : "Продажи"))
+                .setHeader("Режим пополнения").setSortable(true);
         treeGrid.addComponentColumn(dish -> {
             Button button = new Button("Редактировать", event -> {
                 EditDishDialog editDishDialog = new EditDishDialog(dish, dishService, iikoProperties);

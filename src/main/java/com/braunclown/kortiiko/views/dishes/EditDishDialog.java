@@ -117,6 +117,7 @@ public class EditDishDialog extends Dialog {
             try {
                 Double amount = Double.parseDouble(amountField.getValue().replace(",", "."));
                 updateChildDishAmount(dishToEdit, amount);
+                dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                 Notification.show("Дочерние элементы обновлены");
             } catch (Exception e) {
                 Notification n = Notification.show(
@@ -143,6 +144,7 @@ public class EditDishDialog extends Dialog {
                 Double initialAmount = Double.parseDouble(initialAmountField.getValue()
                         .replace(",", "."));
                 updateChildDishInitialAmount(dishToEdit, initialAmount);
+                dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                 Notification.show("Дочерние элементы обновлены");
             } catch (Exception e) {
                 Notification n = Notification.show(
@@ -169,6 +171,7 @@ public class EditDishDialog extends Dialog {
         modeButton.addClickListener(event -> {
             try {
                 updateChildDishMode(dishToEdit, modeComboBox.getValue());
+                dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                 Notification.show("Дочерние элементы обновлены");
             } catch (Exception e) {
                 Notification n = Notification.show(
@@ -194,6 +197,7 @@ public class EditDishDialog extends Dialog {
             try {
                 Double multiplicity = Double.parseDouble(multiplicityField.getValue().replace(",", "."));
                 updateChildDishMultiplicity(dishToEdit, multiplicity);
+                dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                 Notification.show("Дочерние элементы обновлены");
             } catch (Exception e) {
                 Notification n = Notification.show(
@@ -218,6 +222,7 @@ public class EditDishDialog extends Dialog {
         measureButton.addClickListener(event -> {
             try {
                 updateChildDishMeasure(dishToEdit, measureField.getValue());
+                dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                 Notification.show("Дочерние элементы обновлены");
             } catch (Exception e) {
                 Notification n = Notification.show(
