@@ -92,7 +92,7 @@ public class EditDishDialog extends Dialog {
 
     private HorizontalLayout createIikoIdLayout() {
         iikoIdField = new TextField("Идентификатор iiko");
-        iikoIdField.setEnabled(false);
+        iikoIdField.setReadOnly(true);
         iikoIdField.setMinWidth("100px");
 
         iikoIdButton = new Button("Запросить по названию");
