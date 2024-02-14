@@ -5,9 +5,12 @@ import com.braunclown.kortiiko.data.StablePeriodRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
+@Service
 public class StablePeriodService {
 
     private final StablePeriodRepository repository;
@@ -28,6 +31,10 @@ public class StablePeriodService {
         repository.deleteById(id);
     }
 
+    public List<StablePeriod> findAll() {
+        return repository.findAll();
+    }
+
     public Page<StablePeriod> list(Pageable pageable) {
         return repository.findAll(pageable);
     }
@@ -38,5 +45,10 @@ public class StablePeriodService {
 
     public int count() {
         return (int) repository.count();
+    }
+
+    public boolean isOverlapping(StablePeriod period1, StablePeriod period2) {
+        return period1.getStartTime().isBefore(period2.getEndTime())
+                && period1.getEndTime().isAfter(period2.getStartTime());
     }
 }

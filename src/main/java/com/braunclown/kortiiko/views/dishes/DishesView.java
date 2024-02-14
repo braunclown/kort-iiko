@@ -31,7 +31,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import java.util.List;
 import java.util.Set;
 
-@PageTitle("Dishes")
+@PageTitle("Блюда")
 @Route(value = "dishes", layout = MainLayout.class)
 @AnonymousAllowed
 @Uses(Icon.class)
