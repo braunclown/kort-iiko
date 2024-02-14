@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.dishsettings;
 
+import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.data.DishSetting;
 import com.braunclown.kortiiko.services.DishSettingService;
 import com.vaadin.flow.component.Component;
@@ -21,10 +22,12 @@ import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
+import java.util.Optional;
+
 public class DishSettingsDialog extends Dialog {
 
     private final DishSettingService dishSettingService;
-    private final DishSetting dishSetting;
+    private DishSetting dishSetting;
     private TextField dishField;
     private TextField periodField;
     private Button minAmountChildrenButton;
@@ -75,6 +78,19 @@ public class DishSettingsDialog extends Dialog {
     private Component createMinAmountLayout() {
         minAmountField = new TextField("Минимальные запасы");
         minAmountChildrenButton = new Button("Применить к детям");
+        minAmountChildrenButton.addClickListener(event -> {
+            try {
+                Double minAmount = Double.parseDouble(minAmountField.getValue());
+                updateChildrenMinAmount(dishSetting, minAmount);
+                dishSettingService.get(dishSetting.getId()).ifPresent(d -> dishSetting = d);
+                Notification.show("Дочерние элементы обновлены");
+            } catch (Exception e) {
+                Notification n = Notification.show(
+                        "Проверьте правильность введённых данных");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
         minAmountPeriodsButton = new Button("Применить ко всем периодам");
         minAmountDoBothButton = new Button("Применить к детям во всех периодах");
         VerticalLayout layout = new VerticalLayout(minAmountField, minAmountChildrenButton,
@@ -88,6 +104,19 @@ public class DishSettingsDialog extends Dialog {
     private Component createMaxAmountLayout() {
         maxAmountField = new TextField("Максимальные запасы");
         maxAmountChildrenButton = new Button("Применить к детям");
+        maxAmountChildrenButton.addClickListener(event -> {
+            try {
+                Double maxAmount = Double.parseDouble(maxAmountField.getValue());
+                updateChildrenMaxAmount(dishSetting, maxAmount);
+                dishSettingService.get(dishSetting.getId()).ifPresent(d -> dishSetting = d);
+                Notification.show("Дочерние элементы обновлены");
+            } catch (Exception e) {
+                Notification n = Notification.show(
+                        "Проверьте правильность введённых данных");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
         maxAmountPeriodsButton = new Button("Применить ко всем периодам");
         maxAmountDoBothButton = new Button("Применить к детям во всех периодах");
         VerticalLayout layout = new VerticalLayout(maxAmountField, maxAmountChildrenButton,
@@ -148,5 +177,45 @@ public class DishSettingsDialog extends Dialog {
         });
 
         return saveButton;
+    }
+
+    private void updateChildrenMinAmount(DishSetting dishSetting, Double minAmount) {
+        dishSetting.setMinAmount(minAmount);
+        dishSettingService.update(dishSetting);
+        for (Dish child: dishSetting.getDish().getChildDishes()) {
+            Optional<DishSetting> optionalDishSetting =
+                    dishSettingService.getByDishAndStablePeriod(child, dishSetting.getStablePeriod());
+            DishSetting ds = new DishSetting();
+            if (optionalDishSetting.isEmpty()) {
+                ds.setDish(child);
+                ds.setStablePeriod(dishSetting.getStablePeriod());
+                ds.setMinAmount(minAmount);
+                ds.setMaxAmount(minAmount + dishSetting.getDish().getMultiplicity());
+            } else {
+                ds = optionalDishSetting.get();
+                ds.setMinAmount(minAmount);
+            }
+            updateChildrenMinAmount(ds, minAmount);
+        }
+    }
+
+    private void updateChildrenMaxAmount(DishSetting dishSetting, Double maxAmount) {
+        dishSetting.setMaxAmount(maxAmount);
+        dishSettingService.update(dishSetting);
+        for (Dish child: dishSetting.getDish().getChildDishes()) {
+            Optional<DishSetting> optionalDishSetting =
+                    dishSettingService.getByDishAndStablePeriod(child, dishSetting.getStablePeriod());
+            DishSetting ds = new DishSetting();
+            if (optionalDishSetting.isEmpty()) {
+                ds.setDish(child);
+                ds.setStablePeriod(dishSetting.getStablePeriod());
+                ds.setMinAmount(1d);
+                ds.setMaxAmount(maxAmount);
+            } else {
+                ds = optionalDishSetting.get();
+                ds.setMaxAmount(maxAmount);
+            }
+            updateChildrenMaxAmount(ds, maxAmount);
+        }
     }
 }
