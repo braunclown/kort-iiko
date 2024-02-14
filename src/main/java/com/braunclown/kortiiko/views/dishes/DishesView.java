@@ -78,14 +78,7 @@ public class DishesView extends Div {
 
         nameFilterButton = new Button("Искать", new Icon(VaadinIcon.SEARCH));
         nameFilterButton.addClassName(LumoUtility.Margin.Top.AUTO);
-        nameFilterButton.addClickListener(event -> {
-            TreeDataProvider<Dish> dataProvider = new TreeDataProvider<>(treeGrid.getTreeData());
-            dataProvider.setFilter(dish -> dish.getName().toLowerCase().contains(nameFilterField.getValue().toLowerCase()) ||
-                    parentNameContainsString(dish, nameFilterField.getValue()));
-
-            treeGrid.setDataProvider(dataProvider);
-            treeGrid.expandRecursively(treeGrid.getTreeData().getRootItems(), 99);
-        });
+        nameFilterButton.addClickListener(event -> filterTreeGrid());
         HorizontalLayout nameFilterLayout = new HorizontalLayout(nameFilterField, nameFilterButton);
         nameFilterLayout.addClassNames(LumoUtility.Padding.Horizontal.MEDIUM, LumoUtility.Padding.Vertical.XSMALL);
         return nameFilterLayout;
@@ -158,11 +151,23 @@ public class DishesView extends Div {
         return button;
     }
 
+    private void filterTreeGrid() {
+        TreeDataProvider<Dish> dataProvider = new TreeDataProvider<>(treeGrid.getTreeData());
+        dataProvider.setFilter(dish -> dish.getName().toLowerCase().contains(nameFilterField.getValue().toLowerCase()) ||
+                parentNameContainsString(dish, nameFilterField.getValue()));
+
+        treeGrid.setDataProvider(dataProvider);
+        treeGrid.expandRecursively(treeGrid.getTreeData().getRootItems(), 99);
+    }
+
     private void reloadTreeGrid() {
         List<Dish> roots = dishService.findRoots();
         treeGrid.setItems(roots, this::getChildren);
         treeGrid.expandRecursively(roots, 99);
         treeGrid.getDataProvider().refreshAll();
+        if (!nameFilterField.getValue().isEmpty()) {
+            filterTreeGrid();
+        }
     }
 
     public Set<Dish> getChildren(Dish dish) {
