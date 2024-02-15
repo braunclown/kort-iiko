@@ -2,11 +2,13 @@ package com.braunclown.kortiiko.services;
 
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.data.UserRepository;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -35,6 +37,10 @@ public class UserService {
 
     public Page<User> list(Pageable pageable, Specification<User> filter) {
         return repository.findAll(filter, pageable);
+    }
+
+    public List<User> findAll() {
+        return repository.findAll();
     }
 
     public int count() {

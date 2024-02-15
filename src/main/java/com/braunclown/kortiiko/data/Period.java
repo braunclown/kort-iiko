@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 public class Period extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "stable_period_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private StablePeriod stablePeriod;
 
     private LocalDateTime startTime;

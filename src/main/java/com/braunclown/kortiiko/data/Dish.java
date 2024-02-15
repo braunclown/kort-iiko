@@ -1,6 +1,8 @@
 package com.braunclown.kortiiko.data;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Set;
 
@@ -18,6 +20,7 @@ public class Dish extends AbstractEntity {
     private String measure;
     private Boolean isGroup;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Dish parentGroup;
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "parentGroup")
     private Set<Dish> childDishes;

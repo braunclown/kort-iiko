@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "cook_order")
@@ -11,14 +13,17 @@ public class CookOrder extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "cook_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User cook;
 
     @ManyToOne
     @JoinColumn(name = "dish_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Dish dish;
 
     @ManyToOne
     @JoinColumn(name = "period_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Period period;
 
     private Double amountOrdered;

@@ -155,10 +155,10 @@ public class AddDishDialog extends Dialog {
                 dish = new Dish();
                 binder.writeBean(dish);
                 dishService.update(dish);
+                close();
             } catch (ValidationException validationException) {
                 Notification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
             }
-            close();
         });
 
         return saveDishButton;

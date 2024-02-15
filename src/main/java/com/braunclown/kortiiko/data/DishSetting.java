@@ -4,12 +4,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "dish_setting")
 public class DishSetting extends AbstractEntity {
     @ManyToOne
     @JoinColumn(name = "dish_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Dish dish;
 
     private Double minAmount;
@@ -17,6 +20,7 @@ public class DishSetting extends AbstractEntity {
 
     @ManyToOne
     @JoinColumn(name = "stable_period_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private StablePeriod stablePeriod;
 
     public Dish getDish() {

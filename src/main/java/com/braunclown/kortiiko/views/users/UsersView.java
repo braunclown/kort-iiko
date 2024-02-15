@@ -1,23 +1,21 @@
 package com.braunclown.kortiiko.views.users;
 
-import com.braunclown.kortiiko.data.SamplePerson;
-import com.braunclown.kortiiko.services.SamplePersonService;
+import com.braunclown.kortiiko.data.Role;
+import com.braunclown.kortiiko.data.User;
+import com.braunclown.kortiiko.services.UserService;
 import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -26,15 +24,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @PageTitle("Users")
 @Route(value = "users", layout = MainLayout.class)
@@ -42,13 +37,14 @@ import org.springframework.data.jpa.domain.Specification;
 @Uses(Icon.class)
 public class UsersView extends Div {
 
-    private Grid<SamplePerson> grid;
+    private Grid<User> grid;
 
     private Filters filters;
-    private final SamplePersonService samplePersonService;
+    private final UserService userService;
 
-    public UsersView(SamplePersonService SamplePersonService) {
-        this.samplePersonService = SamplePersonService;
+
+    public UsersView(UserService userService) {
+        this.userService = userService;
         setSizeFull();
         addClassNames("users-view");
 
@@ -69,7 +65,7 @@ public class UsersView extends Div {
         mobileFilters.addClassName("mobile-filters");
 
         Icon mobileIcon = new Icon("lumo", "plus");
-        Span filtersHeading = new Span("Filters");
+        Span filtersHeading = new Span("Фильтры");
         mobileFilters.add(mobileIcon, filtersHeading);
         mobileFilters.setFlexGrow(1, filtersHeading);
         mobileFilters.addClickListener(e -> {
@@ -84,14 +80,12 @@ public class UsersView extends Div {
         return mobileFilters;
     }
 
-    public static class Filters extends Div implements Specification<SamplePerson> {
-
-        private final TextField name = new TextField("Name");
-        private final TextField phone = new TextField("Phone");
-        private final DatePicker startDate = new DatePicker("Date of Birth");
-        private final DatePicker endDate = new DatePicker();
-        private final MultiSelectComboBox<String> occupations = new MultiSelectComboBox<>("Occupation");
-        private final CheckboxGroup<String> roles = new CheckboxGroup<>("Role");
+    public static class Filters extends Div implements Specification<User> {
+        private final TextField username = new TextField("Логин");
+        private final TextField realName = new TextField("Имя");
+        private final TextField phone = new TextField("Телефон");
+        private final TextField email = new TextField("Почта");
+        private final CheckboxGroup<Boolean> isActive = new CheckboxGroup<>("Активен");
 
         public Filters(Runnable onSearch) {
 
@@ -99,23 +93,22 @@ public class UsersView extends Div {
             addClassName("filter-layout");
             addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM,
                     LumoUtility.BoxSizing.BORDER);
-            name.setPlaceholder("First or last name");
 
-            occupations.setItems("Insurance Clerk", "Mortarman", "Beer Coil Cleaner", "Scale Attendant");
+            realName.setPlaceholder("Настоящее имя");
 
-            roles.setItems("Worker", "Supervisor", "Manager", "External");
-            roles.addClassName("double-width");
+            isActive.setItems(true, false);
+            isActive.setItemLabelGenerator(status -> status ? "Да" : "Нет");
+
 
             // Action buttons
             Button resetBtn = new Button("Reset");
             resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             resetBtn.addClickListener(e -> {
-                name.clear();
+                username.clear();
+                realName.clear();
                 phone.clear();
-                startDate.clear();
-                endDate.clear();
-                occupations.clear();
-                roles.clear();
+                email.clear();
+                isActive.clear();
                 onSearch.run();
             });
             Button searchBtn = new Button("Search");
@@ -126,36 +119,24 @@ public class UsersView extends Div {
             actions.addClassName(LumoUtility.Gap.SMALL);
             actions.addClassName("actions");
 
-            add(name, phone, createDateRangeFilter(), occupations, roles, actions);
-        }
-
-        private Component createDateRangeFilter() {
-            startDate.setPlaceholder("From");
-
-            endDate.setPlaceholder("To");
-
-            // For screen readers
-            startDate.setAriaLabel("From date");
-            endDate.setAriaLabel("To date");
-
-            FlexLayout dateRangeComponent = new FlexLayout(startDate, new Text(" – "), endDate);
-            dateRangeComponent.setAlignItems(FlexComponent.Alignment.BASELINE);
-            dateRangeComponent.addClassName(LumoUtility.Gap.XSMALL);
-
-            return dateRangeComponent;
+            add(username, realName, phone, email, isActive, actions);
         }
 
         @Override
-        public Predicate toPredicate(Root<SamplePerson> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (!name.isEmpty()) {
-                String lowerCaseFilter = name.getValue().toLowerCase();
-                Predicate firstNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")),
+            if (!username.isEmpty()) {
+                String lowerCaseFilter = username.getValue().toLowerCase();
+                Predicate usernameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("username")),
                         lowerCaseFilter + "%");
-                Predicate lastNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")),
+                predicates.add(criteriaBuilder.or(usernameMatch));
+            }
+            if (!realName.isEmpty()) {
+                String lowerCaseFilter = realName.getValue().toLowerCase();
+                Predicate realNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("realName")),
                         lowerCaseFilter + "%");
-                predicates.add(criteriaBuilder.or(firstNameMatch, lastNameMatch));
+                predicates.add(criteriaBuilder.or(realNameMatch));
             }
             if (!phone.isEmpty()) {
                 String databaseColumn = "phone";
@@ -168,33 +149,22 @@ public class UsersView extends Div {
                 predicates.add(phoneMatch);
 
             }
-            if (startDate.getValue() != null) {
-                String databaseColumn = "dateOfBirth";
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(databaseColumn),
-                        criteriaBuilder.literal(startDate.getValue())));
+            if (!email.isEmpty()) {
+                String lowerCaseFilter = email.getValue().toLowerCase();
+                Predicate realNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("email")),
+                        lowerCaseFilter + "%");
+                predicates.add(criteriaBuilder.or(realNameMatch));
             }
-            if (endDate.getValue() != null) {
-                String databaseColumn = "dateOfBirth";
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(criteriaBuilder.literal(endDate.getValue()),
-                        root.get(databaseColumn)));
-            }
-            if (!occupations.isEmpty()) {
-                String databaseColumn = "occupation";
-                List<Predicate> occupationPredicates = new ArrayList<>();
-                for (String occupation : occupations.getValue()) {
-                    occupationPredicates
-                            .add(criteriaBuilder.equal(criteriaBuilder.literal(occupation), root.get(databaseColumn)));
+            if (!isActive.isEmpty()) {
+                String databaseColumn = "isActive";
+                List<Predicate> isActivePredicates = new ArrayList<>();
+                for (Boolean status : isActive.getValue()) {
+                    isActivePredicates
+                            .add(criteriaBuilder.equal(criteriaBuilder.literal(status), root.get(databaseColumn)));
                 }
-                predicates.add(criteriaBuilder.or(occupationPredicates.toArray(Predicate[]::new)));
+                predicates.add(criteriaBuilder.or(isActivePredicates.toArray(Predicate[]::new)));
             }
-            if (!roles.isEmpty()) {
-                String databaseColumn = "role";
-                List<Predicate> rolePredicates = new ArrayList<>();
-                for (String role : roles.getValue()) {
-                    rolePredicates.add(criteriaBuilder.equal(criteriaBuilder.literal(role), root.get(databaseColumn)));
-                }
-                predicates.add(criteriaBuilder.or(rolePredicates.toArray(Predicate[]::new)));
-            }
+
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         }
 
@@ -219,16 +189,34 @@ public class UsersView extends Div {
     }
 
     private Component createGrid() {
-        grid = new Grid<>(SamplePerson.class, false);
-        grid.addColumn("firstName").setAutoWidth(true);
-        grid.addColumn("lastName").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("phone").setAutoWidth(true);
-        grid.addColumn("dateOfBirth").setAutoWidth(true);
-        grid.addColumn("occupation").setAutoWidth(true);
-        grid.addColumn("role").setAutoWidth(true);
+        grid = new Grid<>(User.class, false);
+        grid.addColumn("username").setAutoWidth(true).setHeader("Логин");
+        grid.addColumn("realName").setAutoWidth(true).setHeader("Имя");
+        grid.addColumn("email").setAutoWidth(true).setHeader("Почта");
+        grid.addColumn("phone").setAutoWidth(true).setHeader("Телефон");
+        grid.addComponentColumn(user -> new Paragraph(user.getActive() ? "Да" : "Нет"))
+                .setAutoWidth(true).setHeader("Активен");
+        grid.addComponentColumn(user -> {
+            String content = "";
+            if (user.getRoles().contains(Role.ADMIN)) {
+                content += "Админ; ";
+            }
+            if (user.getRoles().contains(Role.USER)) {
+                content += "Пользователь; ";
+            }
+            return new Span(content);
+        }).setAutoWidth(true).setHeader("Роли");
+        grid.addComponentColumn(user -> {
+            Button editButton = new Button("Редактировать", new Icon(VaadinIcon.EDIT));
+            editButton.addClickListener(event -> {
+                EditUserDialog dialog = new EditUserDialog(user, userService);
+                dialog.open();
+            });
+            editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+            return editButton;
+        });
 
-        grid.setItems(query -> samplePersonService.list(
+        grid.setItems(query -> userService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),
                 filters).stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);

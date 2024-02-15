@@ -296,6 +296,7 @@ public class EditDishDialog extends Dialog {
                 }
                 binder.writeBean(this.dishToEdit);
                 dishService.update(this.dishToEdit);
+                close();
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
                         "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
@@ -304,7 +305,6 @@ public class EditDishDialog extends Dialog {
             } catch (ValidationException validationException) {
                 Notification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
             }
-            close();
         });
 
         return saveDishButton;

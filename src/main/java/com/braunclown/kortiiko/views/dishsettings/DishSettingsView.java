@@ -172,7 +172,8 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
             }
             DishSetting finalDishSetting = dishSetting;
             Button button = new Button("Редактировать", event -> {
-                DishSettingsDialog dishSettingsDialog = new DishSettingsDialog(dishSettingService, finalDishSetting);
+                DishSettingsDialog dishSettingsDialog =
+                        new DishSettingsDialog(dishSettingService, finalDishSetting, stablePeriodService);
                 dishSettingsDialog.open();
             });
             button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
