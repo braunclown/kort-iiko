@@ -5,6 +5,8 @@ import com.google.common.hash.Hashing;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.http.HttpRequest;
+import java.time.LocalDateTime;
 
 public class IikoConnectionService {
 
@@ -38,6 +40,37 @@ public class IikoConnectionService {
     public String requestDishes(String token) throws URISyntaxException, IOException, InterruptedException {
         return HttpRequestsService.sendGetRequest(iikoAddress
         + "/api/v2/entities/products/list?includeDeleted=false&types=DISH&key=" + token)
+                .body();
+    }
+
+    public String requestSales(String token, LocalDateTime startTime, LocalDateTime endTime)
+            throws URISyntaxException, IOException, InterruptedException {
+        HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString("{\n" +
+                "\t\"reportType\": \"SALES\",\n" +
+                "\t\"buildSummary\": \"false\",\n" +
+                "\t\"groupByRowFields\": [\n" +
+                "\t\t\"DishId\",\n" +
+                "\t\t\"DishName\",\n" +
+                "\t\t\"CloseTime\",\n" +
+                "\t\t\"DishAmountInt\"\n" +
+                "\t],\n" +
+                "\t\"filters\": {\n" +
+                "\t\t\"CloseTime\": {\n" +
+                "\t\t\t\"filterType\": \"DateRange\",\n" +
+                "\t\t\t\"periodType\": \"CUSTOM\",\n" +
+                "\t\t\t\"from\": \"" + startTime + ":00.000\",\n" +
+                "\t\t\t\"to\": \"" + endTime + ":00.000\"\n" +
+                "\t\t},\n" +
+                "\t\t\"OpenDate.Typed\": {\n" +
+                "\t\t\t\"filterType\": \"DateRange\",\n" +
+                "\t\t\t\"periodType\": \"CUSTOM\",\n" +
+                "\t\t\t\"from\": \"2024-01-01T00:00:00.000\",\n" +
+                "\t\t\t\"to\": \"2048-02-20T00:00:00.000\"\n" +
+                "\t\t}\n" +
+                "\t}\n" +
+                "}");
+        // TODO: Привести тело запроса к нормальному виду
+        return HttpRequestsService.sendPostRequest(iikoAddress + "/api/v2/reports/olap?key=" + token, body)
                 .body();
     }
 

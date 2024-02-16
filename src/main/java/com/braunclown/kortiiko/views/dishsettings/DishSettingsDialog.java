@@ -52,7 +52,9 @@ public class DishSettingsDialog extends Dialog {
     private Button saveButton;
 
     private BeanValidationBinder<DishSetting> binder;
-
+    // TODO: автообновление при закрытии
+    // TODO: точка = запятая в полях ввода
+    // TODO: кнопка "подробнее" в сообщении об ошибке (> 3 блюд)
 
     public DishSettingsDialog(DishSettingService dishSettingService,
                               DishSetting dishSetting,
@@ -110,6 +112,8 @@ public class DishSettingsDialog extends Dialog {
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
+        minAmountChildrenButton.setTooltipText("Применить настройку к дочерним группам и блюдам для данного периода");
+
         minAmountPeriodsButton = new Button("Применить ко всем периодам");
         minAmountPeriodsButton.addClickListener(event -> {
             try {
@@ -127,6 +131,8 @@ public class DishSettingsDialog extends Dialog {
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
+        minAmountPeriodsButton.setTooltipText("Применить настройку данного блюда для всех 'стабильных' периодов");
+
         minAmountDoBothButton = new Button("Применить к детям во всех периодах");
         minAmountDoBothButton.addClickListener(event -> {
             try {
@@ -144,6 +150,9 @@ public class DishSettingsDialog extends Dialog {
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
+        minAmountDoBothButton
+                .setTooltipText("Применить настройку к дочерним группам и блюдам для всех 'стабильных' периодов");
+
         VerticalLayout layout = new VerticalLayout(minAmountField, minAmountChildrenButton,
                 minAmountPeriodsButton, minAmountDoBothButton);
         layout.setAlignItems(FlexComponent.Alignment.STRETCH);
@@ -171,6 +180,8 @@ public class DishSettingsDialog extends Dialog {
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
+        maxAmountChildrenButton.setTooltipText("Применить настройку к дочерним группам и блюдам для данного периода");
+
         maxAmountPeriodsButton = new Button("Применить ко всем периодам");
         maxAmountPeriodsButton.addClickListener(event -> {
             try {
@@ -188,6 +199,8 @@ public class DishSettingsDialog extends Dialog {
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
+        maxAmountPeriodsButton.setTooltipText("Применить настройку данного блюда для всех 'стабильных' периодов");
+
         maxAmountDoBothButton = new Button("Применить к детям во всех периодах");
         maxAmountDoBothButton.addClickListener(event -> {
             try {
@@ -205,6 +218,9 @@ public class DishSettingsDialog extends Dialog {
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
+        maxAmountDoBothButton
+                .setTooltipText("Применить настройку к дочерним группам и блюдам для всех 'стабильных' периодов");
+
         VerticalLayout layout = new VerticalLayout(maxAmountField, maxAmountChildrenButton,
                 maxAmountPeriodsButton, maxAmountDoBothButton);
         layout.setAlignItems(FlexComponent.Alignment.STRETCH);
@@ -269,7 +285,7 @@ public class DishSettingsDialog extends Dialog {
                 Notification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
             }
         });
-
+        saveButton.setTooltipText("Применить настройки данного блюда для выбранного периода");
         return saveButton;
     }
 

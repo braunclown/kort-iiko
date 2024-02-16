@@ -40,6 +40,7 @@ public class AddUserDialog extends Dialog {
     private final PasswordEncoder passwordEncoder;
     private BeanValidationBinder<User> binder;
 
+    // TODO: проверка уникальности логина
     public AddUserDialog(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
