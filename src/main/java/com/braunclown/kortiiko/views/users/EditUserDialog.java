@@ -1,11 +1,11 @@
 package com.braunclown.kortiiko.views.users;
 
+import com.braunclown.kortiiko.data.Role;
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.services.UserService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -20,6 +20,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class EditUserDialog extends Dialog {
 
@@ -28,27 +29,28 @@ public class EditUserDialog extends Dialog {
     private Button editPasswordButton;
     private EmailField emailField;
     private TextField phoneField;
-    private Checkbox isActive;
-    private CheckboxGroup<Boolean> roles;
+    private CheckboxGroup<Role> roles;
 
     private Button closeButton;
+    private Button deleteUserButton;
     private Button saveUserButton;
 
     private User userToEdit;
 
-    private UserService userService;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
     private BeanValidationBinder<User> binder;
 
-    public EditUserDialog(User user, UserService userService) {
+    public EditUserDialog(User user, UserService userService, PasswordEncoder passwordEncoder) {
         this.userToEdit = user;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
         this.binder = new BeanValidationBinder<>(User.class);
         configureDialog();
         add(createEditingFields());
         bindFields();
         binder.readBean(this.userToEdit);
         getFooter().add(createFooterLayout());
-        // TODO: проверить работу формы, добавить смену пароля
     }
 
     private void configureDialog() {
@@ -64,16 +66,39 @@ public class EditUserDialog extends Dialog {
         realNameField = new TextField("Настоящее имя");
         emailField = new EmailField("Почта");
         phoneField = new TextField("Телефон");
-        isActive = new Checkbox("Активен");
-
-        return new FormLayout(usernameField, realNameField, emailField, phoneField);
+        roles = new CheckboxGroup<>("Роли");
+        roles.setItems(Role.values());
+        roles.setItemLabelGenerator(role -> role == Role.ADMIN ? "Администратор": "Пользователь");
+        return new FormLayout(usernameField, realNameField,
+                emailField, phoneField,
+                roles,
+                createEditPasswordButton());
     }
+
+    private Button createEditPasswordButton() {
+        editPasswordButton = new Button("Сменить пароль");
+        editPasswordButton.addClickListener(event -> {
+            try {
+                PasswordChangeDialog dialog = new PasswordChangeDialog(userToEdit, userService, passwordEncoder);
+                dialog.open();
+                dialog.addConfirmListener(confirm ->
+                        userService.get(userToEdit.getId()).ifPresent(user -> userToEdit = user));
+            } catch (ObjectOptimisticLockingFailureException e) {
+                Notification n = Notification.show(
+                        "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+        return editPasswordButton;
+    }
+
 
     private HorizontalLayout createFooterLayout() {
         HorizontalLayout footerLayout = new HorizontalLayout();
         footerLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         footerLayout.setWidth("100%");
-        footerLayout.add(createCloseButton(), createSaveUserButton());
+        footerLayout.add(createCloseButton(), createDeleteUserButton(), createSaveUserButton());
 
         return footerLayout;
     }
@@ -90,7 +115,17 @@ public class EditUserDialog extends Dialog {
         binder.forField(realNameField).bind("realName");
         binder.forField(emailField).bind("email");
         binder.forField(phoneField).bind("phone");
-        binder.forField(isActive).bind(User::getActive, User::setActive);
+        binder.forField(roles).bind(User::getRoles, User::setRoles);
+    }
+
+    private Button createDeleteUserButton() {
+        deleteUserButton = new Button("Удалить", new Icon(VaadinIcon.TRASH));
+        deleteUserButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        deleteUserButton.addClickListener(event -> {
+            userService.delete(userToEdit.getId());
+            close();
+        });
+        return deleteUserButton;
     }
 
 

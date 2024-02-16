@@ -7,7 +7,6 @@ import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -27,6 +26,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +41,11 @@ public class UsersView extends Div {
 
     private Filters filters;
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
-
-    public UsersView(UserService userService) {
+    public UsersView(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
         setSizeFull();
         addClassNames("users-view");
 
@@ -85,7 +86,6 @@ public class UsersView extends Div {
         private final TextField realName = new TextField("Имя");
         private final TextField phone = new TextField("Телефон");
         private final TextField email = new TextField("Почта");
-        private final CheckboxGroup<Boolean> isActive = new CheckboxGroup<>("Активен");
 
         public Filters(Runnable onSearch) {
 
@@ -96,22 +96,17 @@ public class UsersView extends Div {
 
             realName.setPlaceholder("Настоящее имя");
 
-            isActive.setItems(true, false);
-            isActive.setItemLabelGenerator(status -> status ? "Да" : "Нет");
-
-
-            // Action buttons
-            Button resetBtn = new Button("Reset");
+            // Кнопки действий
+            Button resetBtn = new Button("Сбросить фильтры", new Icon(VaadinIcon.CLOSE));
             resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             resetBtn.addClickListener(e -> {
                 username.clear();
                 realName.clear();
                 phone.clear();
                 email.clear();
-                isActive.clear();
                 onSearch.run();
             });
-            Button searchBtn = new Button("Search");
+            Button searchBtn = new Button("Искать / Обновить", new Icon(VaadinIcon.REFRESH));
             searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             searchBtn.addClickListener(e -> onSearch.run());
 
@@ -119,7 +114,7 @@ public class UsersView extends Div {
             actions.addClassName(LumoUtility.Gap.SMALL);
             actions.addClassName("actions");
 
-            add(username, realName, phone, email, isActive, actions);
+            add(username, realName, phone, email, actions);
         }
 
         @Override
@@ -154,15 +149,6 @@ public class UsersView extends Div {
                 Predicate realNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("email")),
                         lowerCaseFilter + "%");
                 predicates.add(criteriaBuilder.or(realNameMatch));
-            }
-            if (!isActive.isEmpty()) {
-                String databaseColumn = "isActive";
-                List<Predicate> isActivePredicates = new ArrayList<>();
-                for (Boolean status : isActive.getValue()) {
-                    isActivePredicates
-                            .add(criteriaBuilder.equal(criteriaBuilder.literal(status), root.get(databaseColumn)));
-                }
-                predicates.add(criteriaBuilder.or(isActivePredicates.toArray(Predicate[]::new)));
             }
 
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
@@ -209,12 +195,12 @@ public class UsersView extends Div {
         grid.addComponentColumn(user -> {
             Button editButton = new Button("Редактировать", new Icon(VaadinIcon.EDIT));
             editButton.addClickListener(event -> {
-                EditUserDialog dialog = new EditUserDialog(user, userService);
+                EditUserDialog dialog = new EditUserDialog(user, userService, passwordEncoder);
                 dialog.open();
             });
             editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             return editButton;
-        });
+        }).setHeader(createAddUserButton());
 
         grid.setItems(query -> userService.list(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),
@@ -223,6 +209,15 @@ public class UsersView extends Div {
         grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
 
         return grid;
+    }
+
+    private Component createAddUserButton() {
+        Button button = new Button("Добавить", new Icon(VaadinIcon.PLUS), event -> {
+            AddUserDialog dialog = new AddUserDialog(userService, passwordEncoder);
+            dialog.open();
+        });
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        return button;
     }
 
     private void refreshGrid() {
