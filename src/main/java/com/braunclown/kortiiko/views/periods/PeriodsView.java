@@ -1,6 +1,7 @@
 package com.braunclown.kortiiko.views.periods;
 
 import com.braunclown.kortiiko.data.Period;
+import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.PeriodService;
 import com.braunclown.kortiiko.services.iiko.SalesReceiver;
 import com.braunclown.kortiiko.views.MainLayout;
@@ -32,10 +33,12 @@ public class PeriodsView extends Div {
 
     private final PeriodService periodService;
     private final SalesReceiver salesReceiver;
+    private final DishService dishService;
 
-    public PeriodsView(PeriodService periodService, SalesReceiver salesReceiver) {
+    public PeriodsView(PeriodService periodService, SalesReceiver salesReceiver, DishService dishService) {
         this.periodService = periodService;
         this.salesReceiver = salesReceiver;
+        this.dishService = dishService;
         setSizeFull();
         addClassNames("periods-view");
 
@@ -49,8 +52,14 @@ public class PeriodsView extends Div {
     private Component createMenu() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.addClassNames(LumoUtility.Padding.MEDIUM);
-        Button createPeriods = new Button("Запустить программу");
+        Button updateDishAmount = new Button("Обновить остатки блюд");
+        updateDishAmount.addClickListener(event -> dishService.updateAmounts());
 
+        Button createPeriods = new Button("Запустить программу");
+        createPeriods.setTooltipText(
+                "Разбивает сегодняшний день на промежутки в соответствии со 'стабильными' периодами. " +
+                        "Заполняет этими промежутками таблицу. " +
+                        "Обновляет текущие остатки блюд.");
         createPeriods.addClickListener(event -> {
             try {
                 periodService.createTodayPeriods();
@@ -66,7 +75,7 @@ public class PeriodsView extends Div {
             }
         });
 
-        layout.add(createPeriods);
+        layout.add(updateDishAmount, createPeriods);
         return layout;
     }
 

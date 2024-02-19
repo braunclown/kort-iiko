@@ -69,8 +69,18 @@ public class DishService {
     public List<Dish> findGroups() {
         return repository.findByIsGroupTrue();
     }
+    public List<Dish> findDishes() {
+        return repository.findByIsGroup(false);
+    }
 
     public int count() {
         return (int) repository.count();
+    }
+
+    public void updateAmounts() {
+        for (Dish dish: findAll()) {
+            dish.setAmount(dish.getInitialAmount());
+            update(dish);
+        }
     }
 }

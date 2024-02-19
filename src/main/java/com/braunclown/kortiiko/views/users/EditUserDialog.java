@@ -111,7 +111,10 @@ public class EditUserDialog extends Dialog {
     }
 
     private void bindFields() {
-        binder.forField(usernameField).bind("username");
+        binder.forField(usernameField)
+                .withValidator(v -> !userService.usernameIsTaken(v, userToEdit.getId()),
+                        "Логин должен быть уникальным")
+                .bind("username");
         binder.forField(realNameField).bind("realName");
         binder.forField(emailField).bind("email");
         binder.forField(phoneField).bind("phone");

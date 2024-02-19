@@ -48,6 +48,10 @@ public class PeriodService {
         return repository.findAll(filter, pageable);
     }
 
+    public Optional<Period> getNext(Period period) {
+        return repository.findFirstByStartTimeGreaterThanEqualOrderByStartTimeAsc(period.getStartTime());
+    }
+
     public List<Period> findTodayPeriods() {
         LocalDateTime todayMidnight = LocalDateTime.now()
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
@@ -73,6 +77,15 @@ public class PeriodService {
                 this.update(period);
             }
         }
+    }
+
+    public Optional<Period> getCurrent() {
+        LocalDateTime now = LocalDateTime.now();
+        return repository.findByStartTimeLessThanEqualAndEndTimeGreaterThanEqual(now, now);
+    }
+
+    public Optional<Period> getNext() {
+        return repository.findFirstByStartTimeGreaterThanEqualOrderByStartTimeAsc(LocalDateTime.now());
     }
 
     public int count() {

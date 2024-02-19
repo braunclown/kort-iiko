@@ -69,7 +69,6 @@ public class IikoConnectionService {
                 "\t\t}\n" +
                 "\t}\n" +
                 "}");
-        // TODO: Привести тело запроса к нормальному виду
         return HttpRequestsService.sendPostRequest(iikoAddress + "/api/v2/reports/olap?key=" + token, body)
                 .body();
     }

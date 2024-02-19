@@ -40,7 +40,6 @@ public class AddUserDialog extends Dialog {
     private final PasswordEncoder passwordEncoder;
     private BeanValidationBinder<User> binder;
 
-    // TODO: проверка уникальности логина
     public AddUserDialog(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -90,7 +89,9 @@ public class AddUserDialog extends Dialog {
     }
 
     private void bindFields() {
-        binder.forField(usernameField).bind("username");
+        binder.forField(usernameField)
+                .withValidator(v -> !userService.usernameIsTaken(v), "Логин должен быть уникальным")
+                .bind("username");
         binder.forField(realNameField).bind("realName");
         binder.forField(emailField).bind("email");
         binder.forField(phoneField).bind("phone");

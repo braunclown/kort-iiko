@@ -14,4 +14,6 @@ public interface DishRepository extends JpaRepository<Dish, Long>, JpaSpecificat
     List<Dish> findByParentGroupIsNull();
 
     List<Dish> findByIsGroupTrue();
+
+    List<Dish> findByIsGroup(Boolean isGroup);
 }

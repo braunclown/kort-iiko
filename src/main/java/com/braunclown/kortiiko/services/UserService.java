@@ -47,4 +47,12 @@ public class UserService {
         return (int) repository.count();
     }
 
+    public boolean usernameIsTaken(String username) {
+        return repository.findByUsername(username) != null;
+    }
+
+    public boolean usernameIsTaken(String username, Long id) {
+        User user = repository.findByUsername(username);
+        return user != null && !user.getId().equals(id);
+    }
 }
