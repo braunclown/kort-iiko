@@ -197,6 +197,11 @@ public class UsersView extends Div {
             editButton.addClickListener(event -> {
                 EditUserDialog dialog = new EditUserDialog(user, userService, passwordEncoder);
                 dialog.open();
+                dialog.addOpenedChangeListener(e -> {
+                    if (!e.isOpened()) {
+                        refreshGrid();
+                    }
+                });
             });
             editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             return editButton;
@@ -215,6 +220,11 @@ public class UsersView extends Div {
         Button button = new Button("Добавить", new Icon(VaadinIcon.PLUS), event -> {
             AddUserDialog dialog = new AddUserDialog(userService, passwordEncoder);
             dialog.open();
+            dialog.addOpenedChangeListener(e -> {
+                if (!e.isOpened()) {
+                    refreshGrid();
+                }
+            });
         });
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         return button;

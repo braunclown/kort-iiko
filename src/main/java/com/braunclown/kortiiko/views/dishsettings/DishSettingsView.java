@@ -58,6 +58,7 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
     private TreeGrid<Dish> treeGrid;
     private VerticalLayout layout = new VerticalLayout();
     private Div periodDiv;
+    private int gridIndex;
     public DishSettingsView(StablePeriodService stablePeriodService,
                             DishSettingService dishSettingService,
                             DishService dishService) {
@@ -170,12 +171,7 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
                 dishSetting.setMinAmount(dishSetting.getDish().getMultiplicity());
                 dishSetting.setMaxAmount(dishSetting.getDish().getMultiplicity() * 2);
             }
-            DishSetting finalDishSetting = dishSetting;
-            Button button = new Button("Редактировать", event -> {
-                DishSettingsDialog dishSettingsDialog =
-                        new DishSettingsDialog(dishSettingService, finalDishSetting, stablePeriodService);
-                dishSettingsDialog.open();
-            });
+            Button button = getDialogButton(dishSetting);
             button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             button.setIcon(new Icon(VaadinIcon.EDIT));
             return button;
@@ -187,6 +183,19 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
         treeGrid.expandRecursively(roots, 99);
         treeGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         return treeGrid;
+    }
+
+    private Button getDialogButton(DishSetting dishSetting) {
+        return new Button("Редактировать", event -> {
+            DishSettingsDialog dishSettingsDialog =
+                    new DishSettingsDialog(dishSettingService, dishSetting, stablePeriodService);
+            dishSettingsDialog.open();
+            dishSettingsDialog.addOpenedChangeListener(e -> {
+                if (!e.isOpened()) {
+                    reloadTreeGrid();
+                }
+            });
+        });
     }
 
     @Override

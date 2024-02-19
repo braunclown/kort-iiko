@@ -24,6 +24,7 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.List;
@@ -52,9 +53,6 @@ public class DishSettingsDialog extends Dialog {
     private Button saveButton;
 
     private BeanValidationBinder<DishSetting> binder;
-    // TODO: автообновление при закрытии
-    // TODO: точка = запятая в полях ввода
-    // TODO: кнопка "подробнее" в сообщении об ошибке (> 3 блюд)
 
     public DishSettingsDialog(DishSettingService dishSettingService,
                               DishSetting dishSetting,
@@ -99,7 +97,7 @@ public class DishSettingsDialog extends Dialog {
         minAmountChildrenButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double minAmount = Double.parseDouble(minAmountField.getValue());
+                Double minAmount = Double.parseDouble(minAmountField.getValue().replace(",", "."));
                 updateChildrenMinAmount(dishSetting, minAmount);
                 dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
                         .ifPresent(d -> dishSetting = d);
@@ -118,7 +116,7 @@ public class DishSettingsDialog extends Dialog {
         minAmountPeriodsButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double minAmount = Double.parseDouble(minAmountField.getValue());
+                Double minAmount = Double.parseDouble(minAmountField.getValue().replace(",", "."));
                 updateAllPeriodsMinAmount(dishSetting.getDish(), minAmount);
                 dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
                         .ifPresent(d -> dishSetting = d);
@@ -137,7 +135,7 @@ public class DishSettingsDialog extends Dialog {
         minAmountDoBothButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double minAmount = Double.parseDouble(minAmountField.getValue());
+                Double minAmount = Double.parseDouble(minAmountField.getValue().replace(",", "."));
                 updateChildrenAllPeriodsMinAmount(dishSetting.getDish(), minAmount);
                 dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
                         .ifPresent(d -> dishSetting = d);
@@ -167,7 +165,7 @@ public class DishSettingsDialog extends Dialog {
         maxAmountChildrenButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double maxAmount = Double.parseDouble(maxAmountField.getValue());
+                Double maxAmount = Double.parseDouble(maxAmountField.getValue().replace(",", "."));
                 updateChildrenMaxAmount(dishSetting, maxAmount);
                 dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
                         .ifPresent(d -> dishSetting = d);
@@ -186,7 +184,7 @@ public class DishSettingsDialog extends Dialog {
         maxAmountPeriodsButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double maxAmount = Double.parseDouble(maxAmountField.getValue());
+                Double maxAmount = Double.parseDouble(maxAmountField.getValue().replace(",", "."));
                 updateAllPeriodsMaxAmount(dishSetting.getDish(), maxAmount);
                 dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
                         .ifPresent(d -> dishSetting = d);
@@ -205,7 +203,7 @@ public class DishSettingsDialog extends Dialog {
         maxAmountDoBothButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double maxAmount = Double.parseDouble(maxAmountField.getValue());
+                Double maxAmount = Double.parseDouble(maxAmountField.getValue().replace(",", "."));
                 updateChildrenAllPeriodsMaxAmount(dishSetting.getDish(), maxAmount);
                 dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
                         .ifPresent(d -> dishSetting = d);
@@ -415,6 +413,15 @@ public class DishSettingsDialog extends Dialog {
         Paragraph p = new Paragraph(dialogBody);
         p.addClassName(LumoUtility.Whitespace.PRE_WRAP);
         dialog.setText(p);
+        if (StringUtils.countMatches(dialogBody, "\n") > 3) {
+            p.setVisible(false);
+            Button showButton = new Button("Показать", new Icon(VaadinIcon.EYE));
+            dialog.add(showButton);
+            showButton.addClickListener(event -> {
+                p.setVisible(true);
+                showButton.setVisible(false);
+            });
+        }
         dialog.setConfirmText("Понятно");
         return dialog;
     }

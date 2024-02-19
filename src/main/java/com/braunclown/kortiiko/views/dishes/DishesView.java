@@ -128,6 +128,11 @@ public class DishesView extends Div {
             Button button = new Button("Редактировать", event -> {
                 EditDishDialog editDishDialog = new EditDishDialog(dish, dishService, iikoProperties);
                 editDishDialog.open();
+                editDishDialog.addOpenedChangeListener(e -> {
+                    if (!e.isOpened()) {
+                        reloadTreeGrid();
+                    }
+                });
             });
             button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             button.setIcon(new Icon(VaadinIcon.EDIT));
@@ -146,6 +151,11 @@ public class DishesView extends Div {
         Button button = new Button("Добавить", new Icon(VaadinIcon.PLUS), event -> {
             AddDishDialog dialog = new AddDishDialog(dishService, iikoProperties);
             dialog.open();
+            dialog.addOpenedChangeListener(e -> {
+                if (!e.isOpened()) {
+                    reloadTreeGrid();
+                }
+            });
         });
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         return button;
