@@ -9,6 +9,8 @@ import com.braunclown.kortiiko.services.PeriodService;
 import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -39,6 +41,11 @@ public class OrdersView extends VerticalLayout {
         this.authenticatedUser = authenticatedUser;
         setSizeFull();
         period = getCurrentPeriod();
+        createLayout();
+    }
+
+    private void createLayout() {
+        add(createRefreshButton());
         if (period != null) {
             orders = getCurrentOrders();
             add(new H3("Заказы на текущий период"));
@@ -55,9 +62,10 @@ public class OrdersView extends VerticalLayout {
     }
 
     private Button createRefreshButton() {
-        refreshButton = new Button("Обновить");
+        refreshButton = new Button("Обновить", new Icon(VaadinIcon.REFRESH));
         refreshButton.addClickListener(event -> {
-            // TODO: Обновление страницы
+            removeAll();
+            createLayout();
         });
         return refreshButton;
     }

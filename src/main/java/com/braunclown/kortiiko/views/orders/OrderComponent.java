@@ -113,7 +113,7 @@ public class OrderComponent extends Div {
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
-            // TODO: Обработчик
+            // TODO: Сообщить админу
         });
         unableToCook.addThemeVariants(ButtonVariant.LUMO_ERROR);
         unableToCook.addClassNames(LumoUtility.Width.FULL);

@@ -50,7 +50,6 @@ public class SalesReceiver {
 
         @Override
         public void run() {
-            // TODO: Добавить расчёт заказов
             List<Sale> sales = salesImportService.importSales(period);
             Optional<Period> nextPeriod = periodService.getNext(period);
             nextPeriod.ifPresent(value -> cookOrderService.calculateOrders(value, sales));
