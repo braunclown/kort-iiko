@@ -180,6 +180,8 @@ public class UsersView extends Div {
         grid.addColumn("realName").setAutoWidth(true).setHeader("Имя");
         grid.addColumn("email").setAutoWidth(true).setHeader("Почта");
         grid.addColumn("phone").setAutoWidth(true).setHeader("Телефон");
+        grid.addComponentColumn(user -> new Icon(user.getChatId() == null ? VaadinIcon.CLOSE : VaadinIcon.CHECK))
+                .setAutoWidth(true).setHeader("Чат ТГ");
         grid.addComponentColumn(user -> new Paragraph(user.getActive() ? "Да" : "Нет"))
                 .setAutoWidth(true).setHeader("Активен");
         grid.addComponentColumn(user -> {

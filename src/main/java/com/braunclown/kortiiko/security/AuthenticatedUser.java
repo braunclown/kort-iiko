@@ -3,10 +3,11 @@ package com.braunclown.kortiiko.security;
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.data.UserRepository;
 import com.vaadin.flow.spring.security.AuthenticationContext;
-import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Component
 public class AuthenticatedUser {

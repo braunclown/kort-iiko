@@ -1,6 +1,7 @@
 package com.braunclown.kortiiko.services;
 
 import com.braunclown.kortiiko.data.*;
+import com.braunclown.kortiiko.services.telegram.KortiikoBot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,13 +16,16 @@ public class CookOrderService {
     private final CookOrderRepository repository;
     private final DishService dishService;
     private final DishSettingService dishSettingService;
+    private final KortiikoBot bot;
 
     public CookOrderService(CookOrderRepository repository,
                             DishService dishService,
-                            DishSettingService dishSettingService) {
+                            DishSettingService dishSettingService,
+                            KortiikoBot bot) {
         this.repository = repository;
         this.dishService = dishService;
         this.dishSettingService = dishSettingService;
+        this.bot = bot;
     }
 
     public Optional<CookOrder> get(Long id) {
@@ -65,9 +69,8 @@ public class CookOrderService {
                         calculateMaxOrder(ds, period);
                     }
                 } else {
-                    // TODO: Сообщить админу
-                    System.out.println("АХТУНГ! Не настроил режим пополнения для блюда " + dish
-                            + ", периода " + period.getStablePeriod() + "-" + period.getEndTime());
+                    bot.sendAdmins("Внимание! Режим пополнения для блюда " + dish.getName()
+                            + ", периода " + period.getStablePeriod() + "-" + period.getEndTime() + " не настроен");
                 }
 
             } else {
@@ -100,8 +103,8 @@ public class CookOrderService {
 
     private Double calculateMinMax(DishSetting dishSetting) {
         if (dishSetting.getMaxAmount() - dishSetting.getMinAmount() < dishSetting.getDish().getMultiplicity()) {
-            // TODO: Сообщить админу об ошибке
-            System.out.println("АХТУНГ! Не могу готовить блюдо + " + dishSetting.getDish().getName() + " +: кратность меньше разности max и min");
+            bot.sendAdmins("Внимание! Невозможно приготовить блюдо " + dishSetting.getDish().getName()
+                    + ": кратность меньше разности max и min");
             return 0d;
         } else {
             return Math.round((dishSetting.getMaxAmount() - dishSetting.getDish().getAmount())

@@ -5,6 +5,7 @@ import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.security.AuthenticatedUser;
 import com.braunclown.kortiiko.services.CookOrderService;
 import com.braunclown.kortiiko.services.DishService;
+import com.braunclown.kortiiko.services.telegram.KortiikoBot;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -30,15 +31,18 @@ public class OrderComponent extends Div {
     private final CookOrderService cookOrderService;
     private final DishService dishService;
     private final AuthenticatedUser authenticatedUser;
+    private final KortiikoBot bot;
 
     public OrderComponent(CookOrder order,
                           CookOrderService cookOrderService,
                           DishService dishService,
-                          AuthenticatedUser authenticatedUser) {
+                          AuthenticatedUser authenticatedUser,
+                          KortiikoBot bot) {
         this.order = order;
         this.cookOrderService = cookOrderService;
         this.dishService = dishService;
         this.authenticatedUser = authenticatedUser;
+        this.bot = bot;
         add(createLayout());
 
 
@@ -98,22 +102,11 @@ public class OrderComponent extends Div {
     private Button createUnableToCookButton() {
         Button unableToCook = new Button("Невозможно приготовить", new Icon(VaadinIcon.CLOSE));
         unableToCook.addClickListener(event -> {
-            try {
-                order.setVisible(false);
-                cookOrderService.update(order);
-                setVisible(false);
-            } catch (ObjectOptimisticLockingFailureException e) {
-                Notification n = Notification.show(
-                        "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Произошла ошибка");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            }
-            // TODO: Сообщить админу
+            authenticatedUser.get().ifPresent(user -> {
+                UnableToCookDialog dialog = new UnableToCookDialog(bot, cookOrderService, user, order);
+                dialog.open();
+                dialog.addConfirmListener(confirm -> setVisible(false));
+            });
         });
         unableToCook.addThemeVariants(ButtonVariant.LUMO_ERROR);
         unableToCook.addClassNames(LumoUtility.Width.FULL);

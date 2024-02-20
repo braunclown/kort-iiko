@@ -23,6 +23,7 @@ public class User extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
+    private Long chatId;
 
     public String getUsername() {
         return username;
@@ -74,4 +75,11 @@ public class User extends AbstractEntity {
         this.roles = roles;
     }
 
+    public Long getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
+    }
 }

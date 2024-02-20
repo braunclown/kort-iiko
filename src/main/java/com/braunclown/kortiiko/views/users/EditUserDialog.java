@@ -19,6 +19,8 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.converter.StringToLongConverter;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -29,6 +31,7 @@ public class EditUserDialog extends Dialog {
     private Button editPasswordButton;
     private EmailField emailField;
     private TextField phoneField;
+    private TextField chatIdField;
     private CheckboxGroup<Role> roles;
 
     private Button closeButton;
@@ -71,8 +74,22 @@ public class EditUserDialog extends Dialog {
         roles.setItemLabelGenerator(role -> role == Role.ADMIN ? "Администратор": "Пользователь");
         return new FormLayout(usernameField, realNameField,
                 emailField, phoneField,
+                createChatIdLayout(),
                 roles,
                 createEditPasswordButton());
+    }
+
+    private Component createChatIdLayout() {
+        chatIdField = new TextField("id чата с ботом");
+        chatIdField.setReadOnly(true);
+        Button deleteChatIdButton = new Button("Удалить");
+        deleteChatIdButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        deleteChatIdButton.addClassNames(LumoUtility.Margin.Top.AUTO);
+        deleteChatIdButton.addClickListener(event -> {
+            chatIdField.setValue("");
+            Notification.show("Чтобы применить изменения, нажмите на кнопку 'Сохранить'");
+        });
+        return new HorizontalLayout(chatIdField, deleteChatIdButton);
     }
 
     private Button createEditPasswordButton() {
@@ -119,6 +136,10 @@ public class EditUserDialog extends Dialog {
         binder.forField(emailField).bind("email");
         binder.forField(phoneField).bind("phone");
         binder.forField(roles).bind(User::getRoles, User::setRoles);
+        binder.forField(chatIdField)
+                .withConverter(new StringToLongConverter("Должно быть числом"))
+                .withNullRepresentation(-1L)
+                .bind(User::getChatId, User::setChatId);
     }
 
     private Button createDeleteUserButton() {

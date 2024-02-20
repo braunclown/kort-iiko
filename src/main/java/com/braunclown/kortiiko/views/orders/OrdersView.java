@@ -6,6 +6,7 @@ import com.braunclown.kortiiko.security.AuthenticatedUser;
 import com.braunclown.kortiiko.services.CookOrderService;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.PeriodService;
+import com.braunclown.kortiiko.services.telegram.KortiikoBot;
 import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
@@ -27,6 +28,7 @@ public class OrdersView extends VerticalLayout {
     private final PeriodService periodService;
     private final DishService dishService;
     private final AuthenticatedUser authenticatedUser;
+    private final KortiikoBot bot;
     private List<CookOrder> orders;
     private Period period;
     private Button refreshButton;
@@ -34,11 +36,13 @@ public class OrdersView extends VerticalLayout {
     public OrdersView(CookOrderService cookOrderService,
                       PeriodService periodService,
                       DishService dishService,
-                      AuthenticatedUser authenticatedUser) {
+                      AuthenticatedUser authenticatedUser,
+                      KortiikoBot bot) {
         this.cookOrderService = cookOrderService;
         this.periodService = periodService;
         this.dishService = dishService;
         this.authenticatedUser = authenticatedUser;
+        this.bot = bot;
         setSizeFull();
         period = getCurrentPeriod();
         createLayout();
@@ -50,7 +54,7 @@ public class OrdersView extends VerticalLayout {
             orders = getCurrentOrders();
             add(new H3("Заказы на текущий период"));
             for (CookOrder cookOrder: orders) {
-                add(new OrderComponent(cookOrder, cookOrderService, dishService, authenticatedUser));
+                add(new OrderComponent(cookOrder, cookOrderService, dishService, authenticatedUser, bot));
             }
 
             // TODO: Добавить таймер до конца периода
