@@ -31,7 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-@PageTitle("Users")
+@PageTitle("Пользователи")
 @Route(value = "users", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 @Uses(Icon.class)

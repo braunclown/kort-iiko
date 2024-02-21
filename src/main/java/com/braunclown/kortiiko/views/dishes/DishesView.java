@@ -25,15 +25,15 @@ import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
 import java.util.Set;
 
 @PageTitle("Блюда")
 @Route(value = "dishes", layout = MainLayout.class)
-@AnonymousAllowed
+@RolesAllowed("ADMIN")
 @Uses(Icon.class)
 @CssImport(value = "./themes/kort-iiko/dish-grid.css", themeFor = "vaadin-grid")
 public class DishesView extends Div {

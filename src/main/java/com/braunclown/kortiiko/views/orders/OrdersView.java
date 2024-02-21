@@ -8,18 +8,25 @@ import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.PeriodService;
 import com.braunclown.kortiiko.services.telegram.KortiikoBot;
 import com.braunclown.kortiiko.views.MainLayout;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.PermitAll;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-@PageTitle("Orders")
+@PageTitle("Заказы")
 @Route(value = "orders", layout = MainLayout.class)
 @PermitAll
 public class OrdersView extends VerticalLayout {
@@ -32,6 +39,9 @@ public class OrdersView extends VerticalLayout {
     private List<CookOrder> orders;
     private Period period;
     private Button refreshButton;
+    private SimpleTimer timer;
+    private H3 caption;
+    private VerticalLayout orderLayout;
 
     public OrdersView(CookOrderService cookOrderService,
                       PeriodService periodService,
@@ -43,34 +53,50 @@ public class OrdersView extends VerticalLayout {
         this.dishService = dishService;
         this.authenticatedUser = authenticatedUser;
         this.bot = bot;
-        setSizeFull();
         period = getCurrentPeriod();
-        createLayout();
+
+        add(createLayout());
+        setSizeFull();
     }
 
-    private void createLayout() {
-        add(createRefreshButton());
+    private Component createLayout() {
+        orderLayout = new VerticalLayout();
+        caption = new H3();
+        HorizontalLayout menuLayout = new HorizontalLayout();
+        menuLayout.add(caption, createRefreshButton());
+
+        orderLayout.add(menuLayout);
         if (period != null) {
+            caption.setText("Заказы на текущий период");
             orders = getCurrentOrders();
-            add(new H3("Заказы на текущий период"));
+            orderLayout.add(createTimer());
             for (CookOrder cookOrder: orders) {
-                add(new OrderComponent(cookOrder, cookOrderService, dishService, authenticatedUser, bot));
+                orderLayout.add(new OrderComponent(cookOrder, cookOrderService, dishService, authenticatedUser, bot));
             }
-
-            // TODO: Добавить таймер до конца периода
-
-
         } else {
-            add(new H3("Следующий период не найден. Заказов нет"));
+            caption.setText("Следующий период не найден. Заказов нет");
         }
+        return orderLayout;
+    }
+
+    private Component createTimer() {
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.addClassNames(LumoUtility.FontSize.LARGE);
+        timer = new SimpleTimer(ChronoUnit.SECONDS.between(LocalDateTime.now(), period.getEndTime()));
+        timer.setHours(true);
+        timer.setMinutes(true);
+        timer.setFractions(false);
+        timer.start();
+        timer.addTimerEndEvent(event -> {
+            caption.setText("Период закончился. Обновите страницу для получения новых заказов");
+        });
+        layout.add(new Span("До конца периода осталось "), timer);
+        return layout;
     }
 
     private Button createRefreshButton() {
         refreshButton = new Button("Обновить", new Icon(VaadinIcon.REFRESH));
-        refreshButton.addClickListener(event -> {
-            removeAll();
-            createLayout();
-        });
+        refreshButton.addClickListener(event -> UI.getCurrent().getPage().reload());
         return refreshButton;
     }
 

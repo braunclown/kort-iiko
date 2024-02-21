@@ -10,26 +10,19 @@ import com.braunclown.kortiiko.views.stableperiods.StablePeriodsView;
 import com.braunclown.kortiiko.views.users.UsersView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Footer;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-import java.io.ByteArrayInputStream;
-import java.util.Optional;
 import org.vaadin.lineawesome.LineAwesomeIcon;
+
+import java.util.Optional;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -52,7 +45,7 @@ public class MainLayout extends AppLayout {
 
     private void addHeaderContent() {
         DrawerToggle toggle = new DrawerToggle();
-        toggle.setAriaLabel("Menu toggle");
+        toggle.setAriaLabel("Открыть либо закрыть меню");
 
         viewTitle = new H2();
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
@@ -61,7 +54,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        H1 appName = new H1("Kort iiko");
+        H1 appName = new H1("Kört-iiko");
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
 
@@ -74,28 +67,28 @@ public class MainLayout extends AppLayout {
         SideNav nav = new SideNav();
 
         if (accessChecker.hasAccess(MainView.class)) {
-            nav.addItem(new SideNavItem("Main", MainView.class, LineAwesomeIcon.HOME_SOLID.create()));
+            nav.addItem(new SideNavItem("Главная", MainView.class, LineAwesomeIcon.HOME_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(OrdersView.class)) {
-            nav.addItem(new SideNavItem("Orders", OrdersView.class, LineAwesomeIcon.EDIT_SOLID.create()));
+            nav.addItem(new SideNavItem("Заказы", OrdersView.class, LineAwesomeIcon.EDIT_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(DishesView.class)) {
-            nav.addItem(new SideNavItem("Dishes", DishesView.class, LineAwesomeIcon.PIZZA_SLICE_SOLID.create()));
+            nav.addItem(new SideNavItem("Блюда", DishesView.class, LineAwesomeIcon.PIZZA_SLICE_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(PeriodsView.class)) {
-            nav.addItem(new SideNavItem("Periods", PeriodsView.class, LineAwesomeIcon.CALENDAR_SOLID.create()));
+            nav.addItem(new SideNavItem("Сегодняшние периоды", PeriodsView.class, LineAwesomeIcon.CALENDAR_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(StablePeriodsView.class)) {
             nav.addItem(
-                    new SideNavItem("StablePeriods", StablePeriodsView.class, LineAwesomeIcon.CLOCK_SOLID.create()));
+                    new SideNavItem("'Стабильные' периоды", StablePeriodsView.class, LineAwesomeIcon.CLOCK_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(UsersView.class)) {
-            nav.addItem(new SideNavItem("Users", UsersView.class, LineAwesomeIcon.USER_COG_SOLID.create()));
+            nav.addItem(new SideNavItem("Пользователи", UsersView.class, LineAwesomeIcon.USER_COG_SOLID.create()));
 
         }
 
@@ -120,13 +113,13 @@ public class MainLayout extends AppLayout {
             div.getElement().getStyle().set("align-items", "center");
             div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
             userName.add(div);
-            userName.getSubMenu().addItem("Sign out", e -> {
+            userName.getSubMenu().addItem("Выйти из учётной записи", e -> {
                 authenticatedUser.logout();
             });
 
             layout.add(userMenu);
         } else {
-            Anchor loginLink = new Anchor("login", "Sign in");
+            Anchor loginLink = new Anchor("login", "Войти");
             layout.add(loginLink);
         }
 

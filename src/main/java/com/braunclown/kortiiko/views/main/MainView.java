@@ -11,7 +11,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-@PageTitle("Main")
+@PageTitle("Главная")
 @Route(value = "main", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 @AnonymousAllowed

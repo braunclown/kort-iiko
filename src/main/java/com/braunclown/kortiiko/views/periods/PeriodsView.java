@@ -62,11 +62,17 @@ public class PeriodsView extends Div {
                         "Обновляет текущие остатки блюд.");
         createPeriods.addClickListener(event -> {
             try {
-                periodService.createTodayPeriods();
-                List<Period> todayPeriods = periodService.findTodayPeriods();
-                grid.setItems(todayPeriods);
-                salesReceiver.planRequests(todayPeriods);
-                Notification.show("Программа запущена. Количество периодов сегодня: " + todayPeriods.size());
+                if (periodService.findTodayPeriods().isEmpty()) {
+                    periodService.createTodayPeriods();
+                    List<Period> todayPeriods = periodService.findTodayPeriods();
+                    grid.setItems(todayPeriods);
+                    salesReceiver.planRequests(todayPeriods);
+                    Notification.show("Программа запущена. Количество периодов сегодня: " + todayPeriods.size());
+                } else {
+                    Notification n = Notification.show("Программа уже была запущена сегодня");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
                 Notification n = Notification.show(
                         "Не удалось запустить программу");

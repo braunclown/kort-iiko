@@ -12,7 +12,7 @@ import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 @AnonymousAllowed
-@PageTitle("Login")
+@PageTitle("Вход в учётную запись")
 @Route(value = "login")
 public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
@@ -24,8 +24,13 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
         LoginI18n i18n = LoginI18n.createDefault();
         i18n.setHeader(new LoginI18n.Header());
-        i18n.getHeader().setTitle("Kort iiko");
-        i18n.getHeader().setDescription("Login using user/user or admin/admin");
+        i18n.getHeader().setTitle("Kört-iiko");
+        i18n.getForm().setTitle("Введите логин и пароль");
+        i18n.getForm().setUsername("Имя пользователя");
+        i18n.getForm().setPassword("Пароль");
+        i18n.getForm().setSubmit("Войти");
+        i18n.getErrorMessage().setTitle("Неправильное имя пользователя или пароль");
+        i18n.getErrorMessage().setMessage("Проверьте правильность ввода и попробуйте снова");
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
 

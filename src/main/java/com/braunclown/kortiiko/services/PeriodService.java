@@ -49,7 +49,7 @@ public class PeriodService {
     }
 
     public Optional<Period> getNext(Period period) {
-        return repository.findFirstByStartTimeGreaterThanEqualOrderByStartTimeAsc(period.getStartTime());
+        return repository.findFirstByStartTimeGreaterThanEqualOrderByStartTimeAsc(period.getEndTime());
     }
 
     public List<Period> findTodayPeriods() {
