@@ -9,6 +9,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -40,7 +41,6 @@ public class ImportDishesDialog extends Dialog {
     private VerticalLayout createWarning() {
         VerticalLayout warningLayout = new VerticalLayout();
         warningLayout.add(new Div(VaadinIcon.WARNING.create(), new Span("Внимание!")));
-        warningLayout.add(new Div("Импорт из iiko приведёт к перезаписи имеющихся данных о номенклатуре и настроек пополнения."));
         warningLayout.add(new Div("Не закрывайте окно до окончания импорта."));
         return warningLayout;
     }
@@ -55,21 +55,23 @@ public class ImportDishesDialog extends Dialog {
     }
 
     private Button createCloseButton() {
-        closeButton = new Button("Отмена");
+        closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         closeButton.addClickListener(event -> close());
         return closeButton;
     }
 
     private Button createImportButton() {
-        importButton = new Button("Начать импорт");
+        importButton = new Button("Импортировать и перезаписать", new Icon(VaadinIcon.WARNING));
+        importButton.setTooltipText("Выполнить загрузку номенклатуры из iiko, имеющиеся настройки блюд будут удалены");
         importButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
         importButton.addClickListener(event -> importDishes());
         return importButton;
     }
 
     private Button createUpdateButton() {
-        updateButton = new Button("Обновить");
+        updateButton = new Button("Импортировать", new Icon(VaadinIcon.DOWNLOAD));
+        updateButton.setTooltipText("Выполнить синхронизацию номенклатуры с iiko, имеющиеся настройки блюд будут сохранены");
         updateButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         updateButton.addClickListener(event -> updateDishes());
         return updateButton;

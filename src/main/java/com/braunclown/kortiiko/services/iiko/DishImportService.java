@@ -144,7 +144,6 @@ public class DishImportService {
     public void updateDatabase() {
         List<Dish> dishesReserve = dishService.findAll();
         List<DishSetting> settingsReserve = dishSettingService.findAll();
-        dishService.deleteAll();
         importDishesAndGroups();
         List<Dish> dishes = dishService.findAll();
         for (Dish dish: dishes) {
