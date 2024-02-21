@@ -3,6 +3,7 @@ package com.braunclown.kortiiko.views.dishes;
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.services.DishService;
+import com.braunclown.kortiiko.services.DishSettingService;
 import com.braunclown.kortiiko.services.iiko.IikoProperties;
 import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -45,10 +46,12 @@ public class DishesView extends Div {
     private Button nameFilterButton;
     private final DishService dishService;
     private final IikoProperties iikoProperties;
+    private final DishSettingService dishSettingService;
 
-    public DishesView(DishService dishService, IikoProperties iikoProperties) {
+    public DishesView(DishService dishService, IikoProperties iikoProperties, DishSettingService dishSettingService) {
         this.dishService = dishService;
         this.iikoProperties = iikoProperties;
+        this.dishSettingService = dishSettingService;
         setSizeFull();
         addClassNames("dishes-view");
 
@@ -99,8 +102,13 @@ public class DishesView extends Div {
     private Component createImportDishesButton() {
         importDishesButton = new Button("Импортировать блюда из iiko", new Icon(VaadinIcon.DOWNLOAD));
         importDishesButton.addClickListener(event -> {
-            ImportDishesDialog dialog = new ImportDishesDialog(dishService, iikoProperties);
+            ImportDishesDialog dialog = new ImportDishesDialog(dishService, iikoProperties, dishSettingService);
             dialog.open();
+            dialog.addOpenedChangeListener(e -> {
+                if (!e.isOpened()) {
+                    reloadTreeGrid();
+                }
+            });
         });
         return importDishesButton;
     }
@@ -126,7 +134,8 @@ public class DishesView extends Div {
                 .setHeader("Режим пополнения").setSortable(true);
         treeGrid.addComponentColumn(dish -> {
             Button button = new Button("Редактировать", event -> {
-                EditDishDialog editDishDialog = new EditDishDialog(dish, dishService, iikoProperties);
+                EditDishDialog editDishDialog =
+                        new EditDishDialog(dish, dishService, iikoProperties, dishSettingService);
                 editDishDialog.open();
                 editDishDialog.addOpenedChangeListener(e -> {
                     if (!e.isOpened()) {
@@ -149,7 +158,7 @@ public class DishesView extends Div {
 
     private Button createAddDishButton() {
         Button button = new Button("Добавить", new Icon(VaadinIcon.PLUS), event -> {
-            AddDishDialog dialog = new AddDishDialog(dishService, iikoProperties);
+            AddDishDialog dialog = new AddDishDialog(dishService, iikoProperties, dishSettingService);
             dialog.open();
             dialog.addOpenedChangeListener(e -> {
                 if (!e.isOpened()) {

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,6 +38,10 @@ public class DishSettingService {
 
     public Page<DishSetting> list(Pageable pageable, Specification<DishSetting> filter) {
         return repository.findAll(filter, pageable);
+    }
+
+    public List<DishSetting> findAll() {
+        return repository.findAll();
     }
 
     public int count() {

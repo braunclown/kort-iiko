@@ -3,6 +3,7 @@ package com.braunclown.kortiiko.views.dishes;
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.services.DishService;
+import com.braunclown.kortiiko.services.DishSettingService;
 import com.braunclown.kortiiko.services.iiko.DishImportService;
 import com.braunclown.kortiiko.services.iiko.IikoProperties;
 import com.vaadin.flow.component.Component;
@@ -42,11 +43,15 @@ public class AddDishDialog extends Dialog {
     private Dish dish;
     private final DishService dishService;
     private final IikoProperties iikoProperties;
+    private final DishSettingService dishSettingService;
     private final BeanValidationBinder<Dish> binder;
 
-    public AddDishDialog(DishService dishService, IikoProperties iikoProperties) {
+    public AddDishDialog(DishService dishService,
+                         IikoProperties iikoProperties,
+                         DishSettingService dishSettingService) {
         this.dishService = dishService;
         this.iikoProperties = iikoProperties;
+        this.dishSettingService = dishSettingService;
         this.binder = new BeanValidationBinder<>(Dish.class);
         configureDialog();
         add(createEditingFields());
@@ -108,13 +113,14 @@ public class AddDishDialog extends Dialog {
 
     private HorizontalLayout createIikoIdLayout() {
         iikoIdField = new TextField("Идентификатор iiko");
+        iikoIdField.setValue("Не найдено");
         iikoIdField.setReadOnly(true);
         iikoIdField.setMinWidth("100px");
 
         iikoIdButton = new Button("Запросить по названию");
         iikoIdButton.addClassName(LumoUtility.Margin.Top.AUTO);
         iikoIdButton.addClickListener(event -> {
-            DishImportService dishImportService = new DishImportService(dishService, iikoProperties);
+            DishImportService dishImportService = new DishImportService(dishService, iikoProperties, dishSettingService);
             iikoIdField.setValue(dishImportService.getIikoId(nameField.getValue()));
         });
 

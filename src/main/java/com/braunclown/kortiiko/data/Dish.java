@@ -12,7 +12,7 @@ public class Dish extends AbstractEntity {
 
     private String name;
     private Double amount;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String iikoId;
     private Double multiplicity;
     private Double initialAmount;

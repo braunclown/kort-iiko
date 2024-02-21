@@ -1,8 +1,10 @@
 package com.braunclown.kortiiko.services.iiko;
 
 import com.braunclown.kortiiko.data.Dish;
+import com.braunclown.kortiiko.data.DishSetting;
 import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.services.DishService;
+import com.braunclown.kortiiko.services.DishSettingService;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,15 +14,20 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class DishImportService {
 
     private final DishService dishService;
     private final IikoProperties iikoProperties;
+    private final DishSettingService dishSettingService;
 
-    public DishImportService(DishService dishService, IikoProperties iikoProperties) {
+    public DishImportService(DishService dishService,
+                             IikoProperties iikoProperties,
+                             DishSettingService dishSettingService) {
         this.dishService = dishService;
         this.iikoProperties = iikoProperties;
+        this.dishSettingService = dishSettingService;
     }
 
     public void importDishesAndGroups() {
@@ -132,5 +139,37 @@ public class DishImportService {
             }
         }
         return "Не найдено";
+    }
+
+    public void updateDatabase() {
+        List<Dish> dishesReserve = dishService.findAll();
+        List<DishSetting> settingsReserve = dishSettingService.findAll();
+        dishService.deleteAll();
+        importDishesAndGroups();
+        List<Dish> dishes = dishService.findAll();
+        for (Dish dish: dishes) {
+            Dish finalDish = dish;
+            Optional<Dish> reserveDish = dishesReserve.stream().filter(d -> d.getIikoId().equals(finalDish.getIikoId())).findFirst();
+            if (reserveDish.isPresent()) {
+                Dish d = reserveDish.get();
+                dish.setAmount(d.getAmount());
+                dish.setMode(d.getMode());
+                dish.setInitialAmount(d.getInitialAmount());
+                dish.setMeasure(d.getMeasure());
+                dish.setMultiplicity(d.getMultiplicity());
+                dishService.update(dish);
+                List<DishSetting> dishSettings = settingsReserve.stream()
+                        .filter(ds -> ds.getDish().getIikoId().equals(finalDish.getIikoId())).toList();
+                for (DishSetting ds: dishSettings) {
+                    DishSetting newSetting = new DishSetting();
+                    newSetting.setDish(dish);
+                    newSetting.setStablePeriod(ds.getStablePeriod());
+                    newSetting.setMinAmount(ds.getMinAmount());
+                    newSetting.setMaxAmount(ds.getMaxAmount());
+                    dishSettingService.update(newSetting);
+                }
+            }
+        }
+
     }
 }

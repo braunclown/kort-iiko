@@ -1,6 +1,7 @@
 package com.braunclown.kortiiko.views.dishes;
 
 import com.braunclown.kortiiko.services.DishService;
+import com.braunclown.kortiiko.services.DishSettingService;
 import com.braunclown.kortiiko.services.iiko.DishImportService;
 import com.braunclown.kortiiko.services.iiko.IikoProperties;
 import com.vaadin.flow.component.button.Button;
@@ -16,13 +17,18 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 public class ImportDishesDialog extends Dialog {
     private Button closeButton;
     private Button importButton;
+    private Button updateButton;
     private HorizontalLayout footerLayout;
     private final DishService dishService;
     private final IikoProperties iikoProperties;
+    private final DishSettingService dishSettingService;
 
-    public ImportDishesDialog(DishService dishService, IikoProperties iikoProperties) {
+    public ImportDishesDialog(DishService dishService,
+                              IikoProperties iikoProperties,
+                              DishSettingService dishSettingService) {
         this.dishService = dishService;
         this.iikoProperties = iikoProperties;
+        this.dishSettingService = dishSettingService;
         setCloseOnEsc(false);
         setCloseOnOutsideClick(false);
         setHeaderTitle("Импортировать номенклатуру из iiko?");
@@ -40,7 +46,9 @@ public class ImportDishesDialog extends Dialog {
     }
 
     private HorizontalLayout createFooterLayout() {
-        HorizontalLayout footerLayout = new HorizontalLayout(createCloseButton(), createImportButton());
+        HorizontalLayout footerLayout = new HorizontalLayout(createCloseButton(),
+                createImportButton(),
+                createUpdateButton());
         footerLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         footerLayout.setWidth("100%");
         return footerLayout;
@@ -60,10 +68,34 @@ public class ImportDishesDialog extends Dialog {
         return importButton;
     }
 
+    private Button createUpdateButton() {
+        updateButton = new Button("Обновить");
+        updateButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        updateButton.addClickListener(event -> updateDishes());
+        return updateButton;
+    }
+
     private void importDishes() {
         footerLayout.remove(closeButton, importButton);
-        DishImportService dishImportService = new DishImportService(dishService, iikoProperties);
+        DishImportService dishImportService = new DishImportService(dishService, iikoProperties, dishSettingService);
         dishImportService.importDishesAndGroups();
+        Dialog dialog = new Dialog("Импорт завершён");
+        dialog.setCloseOnOutsideClick(false);
+        dialog.setCloseOnEsc(false);
+        Button closeButton = new Button("Закрыть");
+        closeButton.addClickListener(event -> {
+            dialog.close();
+            this.close();
+        });
+        dialog.getFooter().add(closeButton);
+        dialog.open();
+
+    }
+
+    private void updateDishes() {
+        footerLayout.remove(closeButton, importButton);
+        DishImportService dishImportService = new DishImportService(dishService, iikoProperties, dishSettingService);
+        dishImportService.updateDatabase();
         Dialog dialog = new Dialog("Импорт завершён");
         dialog.setCloseOnOutsideClick(false);
         dialog.setCloseOnEsc(false);
