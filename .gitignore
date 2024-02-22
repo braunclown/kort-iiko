@@ -21,3 +21,4 @@ error-screenshots/
 webpack.generated.js
 /kortiikobot
 /src/main/bundles/prod.bundle
+/kortiikobot.wal.0

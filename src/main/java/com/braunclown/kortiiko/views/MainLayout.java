@@ -54,9 +54,13 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
+        Image icon = new Image("images/logo32.png", "Логотип");
+        icon.setWidth("32px");
+        icon.setHeight("32px");
+
         H1 appName = new H1("Kört-iiko");
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
-        Header header = new Header(appName);
+        Header header = new Header(icon, appName);
 
         Scroller scroller = new Scroller(createNavigation());
 
