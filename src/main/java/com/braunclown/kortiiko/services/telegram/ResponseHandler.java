@@ -19,23 +19,17 @@ public class ResponseHandler {
     public void replyToStart(long chatId) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText("Введите команду '/auth (логин) (пароль)', чтобы начать получать сообщения для администраторов");
+        message.setText("Введите команду /auth, чтобы получить инструкцию по подключению уведомлений");
         sender.execute(message);
     }
 
-    public void replyToAuth(String login, String password, long chatId) {
-        login = login.substring(1, login.length() - 1);
-        password = password.substring(1, password.length() - 1);
+    public void replyToAuth(long chatId) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        if (userService.validateAdmin(login, password)) {
-            User user = userService.findByUsername(login);
-            user.setChatId(chatId);
-            userService.update(user);
-            message.setText("Вам будут приходить сообщения для администраторов");
-        } else {
-            message.setText("Администратора с такими логином и паролем не существует");
-        }
+        message.setText("Войдите в приложение под учётной записью администратора " +
+                "и введите число из следующего сообщения в поле на странице 'Telegram-чат'");
+        sender.execute(message);
+        message.setText(String.valueOf(chatId));
         sender.execute(message);
     }
 

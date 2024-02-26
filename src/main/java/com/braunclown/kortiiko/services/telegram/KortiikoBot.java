@@ -36,7 +36,7 @@ public class KortiikoBot extends AbilityBot {
                 .privacy(PUBLIC)
                 .action(ctx -> {
                     try {
-                        responseHandler.replyToAuth(ctx.firstArg(), ctx.secondArg(), ctx.chatId());
+                        responseHandler.replyToAuth(ctx.chatId());
                     } catch (Exception e) {
                         responseHandler.replyWithError(ctx.chatId());
                     }

@@ -7,6 +7,7 @@ import com.braunclown.kortiiko.views.main.MainView;
 import com.braunclown.kortiiko.views.orders.OrdersView;
 import com.braunclown.kortiiko.views.periods.PeriodsView;
 import com.braunclown.kortiiko.views.stableperiods.StablePeriodsView;
+import com.braunclown.kortiiko.views.subscription.SubscriptionView;
 import com.braunclown.kortiiko.views.users.UsersView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -93,6 +94,11 @@ public class MainLayout extends AppLayout {
         }
         if (accessChecker.hasAccess(UsersView.class)) {
             nav.addItem(new SideNavItem("Пользователи", UsersView.class, LineAwesomeIcon.USER_COG_SOLID.create()));
+
+        }
+
+        if (accessChecker.hasAccess(SubscriptionView.class)) {
+            nav.addItem(new SideNavItem("Telegram-чат", SubscriptionView.class, LineAwesomeIcon.TELEGRAM.create()));
 
         }
 
