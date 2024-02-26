@@ -20,7 +20,7 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
-@PageTitle("Телеграм-чат")
+@PageTitle("Telegram-чат")
 @Route(value = "subscribe", layout = MainLayout.class)
 @RolesAllowed("ADMIN")
 public class SubscriptionView extends VerticalLayout {
