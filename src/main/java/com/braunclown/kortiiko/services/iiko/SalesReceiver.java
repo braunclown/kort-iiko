@@ -4,7 +4,7 @@ import com.braunclown.kortiiko.data.Period;
 import com.braunclown.kortiiko.data.Sale;
 import com.braunclown.kortiiko.services.CookOrderService;
 import com.braunclown.kortiiko.services.PeriodService;
-import com.braunclown.kortiiko.services.SaleService;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +14,19 @@ import java.util.Optional;
 
 @Service
 public class SalesReceiver {
-    private final SaleService saleService;
     private final PeriodService periodService;
     private final SalesImportService salesImportService;
     private final CookOrderService cookOrderService;
+    private final String timezone;
 
-    public SalesReceiver(SaleService saleService,
-                         PeriodService periodService,
+    public SalesReceiver(PeriodService periodService,
                          SalesImportService salesImportService,
-                         CookOrderService cookOrderService) {
-        this.saleService = saleService;
+                         CookOrderService cookOrderService,
+                         Environment environment) {
         this.periodService = periodService;
         this.salesImportService = salesImportService;
         this.cookOrderService = cookOrderService;
+        this.timezone = environment.getProperty("settings.timezone", "Europe/Moscow");
     }
 
     public void planRequests(List<Period> todayPeriods) {
@@ -36,7 +36,7 @@ public class SalesReceiver {
 
         for (Period period: todayPeriods) {
             scheduler.schedule(new SalesRequest(period),
-                    period.getEndTime().atZone(ZoneId.of("Europe/Moscow")).toInstant());
+                    period.getEndTime().atZone(ZoneId.of(timezone)).toInstant());
         }
     }
 
