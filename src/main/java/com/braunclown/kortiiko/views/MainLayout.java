@@ -2,6 +2,7 @@ package com.braunclown.kortiiko.views;
 
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.security.AuthenticatedUser;
+import com.braunclown.kortiiko.views.daytype.DayTypeView;
 import com.braunclown.kortiiko.views.dishes.DishesView;
 import com.braunclown.kortiiko.views.main.MainView;
 import com.braunclown.kortiiko.views.orders.OrdersView;
@@ -84,7 +85,7 @@ public class MainLayout extends AppLayout {
 
         }
         if (accessChecker.hasAccess(PeriodsView.class)) {
-            nav.addItem(new SideNavItem("Сегодняшние периоды", PeriodsView.class, LineAwesomeIcon.CALENDAR_SOLID.create()));
+            nav.addItem(new SideNavItem("Сегодняшние периоды", PeriodsView.class, LineAwesomeIcon.BUSINESS_TIME_SOLID.create()));
 
         }
         if (accessChecker.hasAccess(StablePeriodsView.class)) {
@@ -100,6 +101,10 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(SubscriptionView.class)) {
             nav.addItem(new SideNavItem("Telegram-чат", SubscriptionView.class, LineAwesomeIcon.TELEGRAM.create()));
 
+        }
+
+        if (accessChecker.hasAccess(DayTypeView.class)) {
+            nav.addItem(new SideNavItem("Типы смен", DayTypeView.class, LineAwesomeIcon.CALENDAR_SOLID.create()));
         }
 
         return nav;

@@ -51,9 +51,11 @@ public class IikoConnectionService {
                 "\t\"groupByRowFields\": [\n" +
                 "\t\t\"DishId\",\n" +
                 "\t\t\"DishName\",\n" +
-                "\t\t\"CloseTime\",\n" +
-                "\t\t\"DishAmountInt\"\n" +
+                "\t\t\"CloseTime\"\n" +
                 "\t],\n" +
+                "\t\"aggregateFields\": [\n" +
+                "\t\t\"DishAmountInt\"\n" +
+                "\t\t]," +
                 "\t\"filters\": {\n" +
                 "\t\t\"CloseTime\": {\n" +
                 "\t\t\t\"filterType\": \"DateRange\",\n" +

@@ -107,7 +107,7 @@ public class CookOrderService {
                     + ": кратность меньше разности max и min");
             return 0d;
         } else {
-            return Math.round((dishSetting.getMaxAmount() - dishSetting.getDish().getAmount())
+            return Math.floor((dishSetting.getMaxAmount() - dishSetting.getDish().getAmount())
                     / dishSetting.getDish().getMultiplicity())
                     * dishSetting.getDish().getMultiplicity();
         }

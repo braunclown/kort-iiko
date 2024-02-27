@@ -8,4 +8,6 @@ import java.util.List;
 public interface StablePeriodRepository extends JpaRepository<StablePeriod, Long>, JpaSpecificationExecutor<StablePeriod> {
 
     List<StablePeriod> findByDayType(DayType dayType);
+
+    long countByDayType(DayType dayType);
 }

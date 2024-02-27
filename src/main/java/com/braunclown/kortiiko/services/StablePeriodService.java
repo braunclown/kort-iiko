@@ -57,4 +57,8 @@ public class StablePeriodService {
         return period1.getStartTime().isBefore(period2.getEndTime())
                 && period1.getEndTime().isAfter(period2.getStartTime());
     }
+
+    public long countByDayType(DayType dayType) {
+        return repository.countByDayType(dayType);
+    }
 }
