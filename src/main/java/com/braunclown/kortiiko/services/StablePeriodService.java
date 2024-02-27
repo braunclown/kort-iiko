@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.services;
 
+import com.braunclown.kortiiko.data.DayType;
 import com.braunclown.kortiiko.data.StablePeriod;
 import com.braunclown.kortiiko.data.StablePeriodRepository;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,11 @@ public class StablePeriodService {
     public List<StablePeriod> findAll() {
         return repository.findAll();
     }
+
+    public List<StablePeriod> findByDayType(DayType dayType) {
+        return repository.findByDayType(dayType);
+    }
+
 
     public Page<StablePeriod> list(Pageable pageable) {
         return repository.findAll(pageable);

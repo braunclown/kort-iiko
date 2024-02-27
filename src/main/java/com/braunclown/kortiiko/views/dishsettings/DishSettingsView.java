@@ -204,7 +204,7 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
         if (stablePeriodId.isPresent()) {
             Optional<StablePeriod> stablePeriodFromBackend = stablePeriodService.get(stablePeriodId.get());
             if (stablePeriodFromBackend.isPresent()) {
-                periodDiv = new Div("для периода " +
+                periodDiv = new Div("для периода " + stablePeriodFromBackend.get().getDayType().getName() + " | " +
                         stablePeriodFromBackend.get().getStartTime() +
                         "-" + stablePeriodFromBackend.get().getEndTime());
                 periodDiv.addClassNames(LumoUtility.Margin.Horizontal.SMALL);

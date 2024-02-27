@@ -1,8 +1,10 @@
 package com.braunclown.kortiiko.views.stableperiods;
 
+import com.braunclown.kortiiko.data.DayType;
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.data.DishSetting;
 import com.braunclown.kortiiko.data.StablePeriod;
+import com.braunclown.kortiiko.services.DayTypeService;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.DishSettingService;
 import com.braunclown.kortiiko.services.StablePeriodService;
@@ -21,6 +23,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
@@ -51,6 +54,7 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
     private final Grid<StablePeriod> periodGrid = new Grid<>(StablePeriod.class, false);
 
     private TextField id;
+    private Select<DayType> dayType;
     private TimePicker startTime;
     private TimePicker endTime;
 
@@ -65,13 +69,16 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
     private final StablePeriodService stablePeriodService;
     private final DishSettingService dishSettingService;
     private final DishService dishService;
+    private final DayTypeService dayTypeService;
 
     public StablePeriodsView(StablePeriodService stablePeriodService,
                              DishSettingService dishSettingService,
-                             DishService dishService) {
+                             DishService dishService,
+                             DayTypeService dayTypeService) {
         this.stablePeriodService = stablePeriodService;
         this.dishSettingService = dishSettingService;
         this.dishService = dishService;
+        this.dayTypeService = dayTypeService;
         addClassNames("stable-periods-view");
 
         // Создание пользовательского интерфейса
@@ -83,6 +90,8 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Настройка таблицы
+        periodGrid.addColumn(sp -> sp.getDayType().getName())
+                .setAutoWidth(true).setSortable(true).setHeader("Тип смены");
         periodGrid.addColumn("startTime").setAutoWidth(true).setSortable(true).setHeader("Время начала");
         periodGrid.addColumn("endTime").setAutoWidth(true).setSortable(true).setHeader("Время конца");
         periodGrid.addComponentColumn(stablePeriod -> {
@@ -94,6 +103,7 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
             return button;
         });
         periodGrid.setItems(stablePeriodService.findAll());
+        periodGrid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
 
         periodGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
@@ -115,18 +125,23 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
         binder.forField(id)
                 .withConverter(new StringToLongConverter("Введите целое число"))
                 .bind(StablePeriod::getId, StablePeriod::setId);
+        binder.forField(dayType)
+                .withValidator(Objects::nonNull, "Заполните тип смены")
+                .bind(StablePeriod::getDayType, StablePeriod::setDayType);
         binder.forField(startTime).withValidator(
                 startTime -> endTime.getValue() != null && startTime != null && startTime.isBefore(endTime.getValue()),
                 "Начало периода должно быть раньше его конца"
         ).withValidator(
                 (startTime, something) -> {
-                    for (StablePeriod period: stablePeriodService.findAll()) {
-                        if (startTime != null && endTime.getValue() != null && !Objects.equals(stablePeriod, period)) {
-                            StablePeriod currerntPeriod = new StablePeriod();
-                            currerntPeriod.setStartTime(startTime);
-                            currerntPeriod.setEndTime(endTime.getValue());
-                            if (stablePeriodService.isOverlapping(period, currerntPeriod)) {
-                                return ValidationResult.error("Данный период пересекается с другим");
+                    if (dayType.getValue() != null) {
+                        for (StablePeriod period : stablePeriodService.findByDayType(dayType.getValue())) {
+                            if (startTime != null && endTime.getValue() != null && !Objects.equals(stablePeriod, period)) {
+                                StablePeriod currerntPeriod = new StablePeriod();
+                                currerntPeriod.setStartTime(startTime);
+                                currerntPeriod.setEndTime(endTime.getValue());
+                                if (stablePeriodService.isOverlapping(period, currerntPeriod)) {
+                                    return ValidationResult.error("Данный период пересекается с другим");
+                                }
                             }
                         }
                     }
@@ -138,13 +153,15 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
                 "Конец периода должен быть позже его начала"
         ).withValidator(
                 (endTime, something) -> {
-                    for (StablePeriod period: stablePeriodService.findAll()) {
-                        if (startTime.getValue() != null && endTime != null && !Objects.equals(stablePeriod, period)) {
-                            StablePeriod currerntPeriod = new StablePeriod();
-                            currerntPeriod.setStartTime(startTime.getValue());
-                            currerntPeriod.setEndTime(endTime);
-                            if (stablePeriodService.isOverlapping(period, currerntPeriod)) {
-                                return ValidationResult.error("Данный период пересекается с другим");
+                    if (dayType.getValue() != null) {
+                        for (StablePeriod period : stablePeriodService.findByDayType(dayType.getValue())) {
+                            if (startTime.getValue() != null && endTime != null && !Objects.equals(stablePeriod, period)) {
+                                StablePeriod currerntPeriod = new StablePeriod();
+                                currerntPeriod.setStartTime(startTime.getValue());
+                                currerntPeriod.setEndTime(endTime);
+                                if (stablePeriodService.isOverlapping(period, currerntPeriod)) {
+                                    return ValidationResult.error("Данный период пересекается с другим");
+                                }
                             }
                         }
                     }
@@ -222,9 +239,13 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
         FormLayout formLayout = new FormLayout();
         id = new TextField("Идентификатор");
         id.setReadOnly(true);
+        dayType = new Select<>();
+        dayType.setLabel("Тип смены");
+        dayType.setItems(dayTypeService.findAll());
+        dayType.setItemLabelGenerator(DayType::getName);
         startTime = new TimePicker("Время начала");
         endTime = new TimePicker("Время конца");
-        formLayout.add(id, startTime, endTime);
+        formLayout.add(id, dayType, startTime, endTime);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);

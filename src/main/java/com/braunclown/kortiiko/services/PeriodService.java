@@ -1,9 +1,6 @@
 package com.braunclown.kortiiko.services;
 
-import com.braunclown.kortiiko.data.Period;
-import com.braunclown.kortiiko.data.PeriodRepository;
-import com.braunclown.kortiiko.data.SamplePersonRepository;
-import com.braunclown.kortiiko.data.StablePeriod;
+import com.braunclown.kortiiko.data.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -60,10 +57,10 @@ public class PeriodService {
         return repository.findByStartTimeBetween(todayMidnight, tomorrowMidnight);
     }
 
-    public void createTodayPeriods() {
+    public void createTodayPeriods(DayType dayType) {
         LocalDateTime todayMidnight = LocalDateTime.now()
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
-        List<StablePeriod> stablePeriods = stablePeriodService.findAll();
+        List<StablePeriod> stablePeriods = stablePeriodService.findByDayType(dayType);
         for (StablePeriod stablePeriod: stablePeriods) {
             if (stablePeriod.getEndTime().isAfter(LocalTime.now())) {
                 Period period = new Period();

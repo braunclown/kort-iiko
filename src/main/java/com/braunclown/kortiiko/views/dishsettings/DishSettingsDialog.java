@@ -69,6 +69,7 @@ public class DishSettingsDialog extends Dialog {
 
     private void configureDialog() {
         setHeaderTitle(dishSetting.getDish().getName()
+                + " | " + dishSetting.getStablePeriod().getDayType().getName()
                 + " | " + dishSetting.getStablePeriod().getStartTime()
                 + "-" + dishSetting.getStablePeriod().getEndTime());
         setResizable(true);
@@ -129,7 +130,8 @@ public class DishSettingsDialog extends Dialog {
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
-        minAmountPeriodsButton.setTooltipText("Применить настройку данного блюда для всех 'стабильных' периодов");
+        minAmountPeriodsButton.setTooltipText("Применить настройку данного блюда для всех 'стабильных' периодов с типом смены "
+                + dishSetting.getStablePeriod().getDayType().getName());
 
         minAmountDoBothButton = new Button("Применить к детям во всех периодах");
         minAmountDoBothButton.addClickListener(event -> {
@@ -149,7 +151,8 @@ public class DishSettingsDialog extends Dialog {
             }
         });
         minAmountDoBothButton
-                .setTooltipText("Применить настройку к дочерним группам и блюдам для всех 'стабильных' периодов");
+                .setTooltipText("Применить настройку к дочерним группам и блюдам для всех 'стабильных' периодов с типом смены "
+                        + dishSetting.getStablePeriod().getDayType().getName());
 
         VerticalLayout layout = new VerticalLayout(minAmountField, minAmountChildrenButton,
                 minAmountPeriodsButton, minAmountDoBothButton);
@@ -197,7 +200,8 @@ public class DishSettingsDialog extends Dialog {
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
-        maxAmountPeriodsButton.setTooltipText("Применить настройку данного блюда для всех 'стабильных' периодов");
+        maxAmountPeriodsButton.setTooltipText("Применить настройку данного блюда для всех 'стабильных' периодов с типом смены "
+                + dishSetting.getStablePeriod().getDayType().getName());
 
         maxAmountDoBothButton = new Button("Применить к детям во всех периодах");
         maxAmountDoBothButton.addClickListener(event -> {
@@ -217,7 +221,8 @@ public class DishSettingsDialog extends Dialog {
             }
         });
         maxAmountDoBothButton
-                .setTooltipText("Применить настройку к дочерним группам и блюдам для всех 'стабильных' периодов");
+                .setTooltipText("Применить настройку к дочерним группам и блюдам для всех 'стабильных' периодов с типом смены "
+                        + dishSetting.getStablePeriod().getDayType().getName());
 
         VerticalLayout layout = new VerticalLayout(maxAmountField, maxAmountChildrenButton,
                 maxAmountPeriodsButton, maxAmountDoBothButton);
@@ -336,7 +341,7 @@ public class DishSettingsDialog extends Dialog {
     }
 
     private void updateAllPeriodsMinAmount(Dish dish, Double minAmount) {
-        List<StablePeriod> stablePeriods = stablePeriodService.findAll();
+        List<StablePeriod> stablePeriods = stablePeriodService.findByDayType(dishSetting.getStablePeriod().getDayType());
         for (StablePeriod stablePeriod: stablePeriods) {
             Optional<DishSetting> optionalDishSetting =
                     dishSettingService.getByDishAndStablePeriod(dish, stablePeriod);
@@ -359,7 +364,7 @@ public class DishSettingsDialog extends Dialog {
     }
 
     private void updateAllPeriodsMaxAmount(Dish dish, Double maxAmount) {
-        List<StablePeriod> stablePeriods = stablePeriodService.findAll();
+        List<StablePeriod> stablePeriods = stablePeriodService.findByDayType(dishSetting.getStablePeriod().getDayType());
         for (StablePeriod stablePeriod: stablePeriods) {
             Optional<DishSetting> optionalDishSetting =
                     dishSettingService.getByDishAndStablePeriod(dish, stablePeriod);

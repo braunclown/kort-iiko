@@ -1,6 +1,8 @@
 package com.braunclown.kortiiko.views.periods;
 
+import com.braunclown.kortiiko.data.DayType;
 import com.braunclown.kortiiko.data.Period;
+import com.braunclown.kortiiko.services.DayTypeService;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.PeriodService;
 import com.braunclown.kortiiko.services.iiko.SalesReceiver;
@@ -16,6 +18,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
@@ -34,11 +37,16 @@ public class PeriodsView extends Div {
     private final PeriodService periodService;
     private final SalesReceiver salesReceiver;
     private final DishService dishService;
+    private final DayTypeService dayTypeService;
 
-    public PeriodsView(PeriodService periodService, SalesReceiver salesReceiver, DishService dishService) {
+    public PeriodsView(PeriodService periodService,
+                       SalesReceiver salesReceiver,
+                       DishService dishService,
+                       DayTypeService dayTypeService) {
         this.periodService = periodService;
         this.salesReceiver = salesReceiver;
         this.dishService = dishService;
+        this.dayTypeService = dayTypeService;
         setSizeFull();
         addClassNames("periods-view");
 
@@ -54,24 +62,37 @@ public class PeriodsView extends Div {
         layout.addClassNames(LumoUtility.Padding.MEDIUM);
         Button updateDishAmount = new Button("Обновить остатки блюд");
         updateDishAmount.addClickListener(event -> dishService.updateAmounts());
+        updateDishAmount.addClassNames(LumoUtility.Margin.Top.AUTO);
+
+        Select<DayType> dayTypeSelect = new Select<>();
+        dayTypeSelect.setLabel("Выберите тип смены");
+        dayTypeSelect.setItemLabelGenerator(DayType::getName);
+        dayTypeSelect.setItems(dayTypeService.findAll());
 
         Button createPeriods = new Button("Запустить программу");
         createPeriods.setTooltipText(
                 "Разбивает сегодняшний день на промежутки в соответствии со 'стабильными' периодами. " +
                         "Заполняет этими промежутками таблицу. " +
                         "Обновляет текущие остатки блюд.");
+        createPeriods.addClassNames(LumoUtility.Margin.Top.AUTO);
         createPeriods.addClickListener(event -> {
             try {
-                if (periodService.findTodayPeriods().isEmpty()) {
-                    periodService.createTodayPeriods();
-                    List<Period> todayPeriods = periodService.findTodayPeriods();
-                    grid.setItems(todayPeriods);
-                    salesReceiver.planRequests(todayPeriods);
-                    Notification.show("Программа запущена. Количество периодов сегодня: " + todayPeriods.size());
-                } else {
-                    Notification n = Notification.show("Программа уже была запущена сегодня");
+                if (dayTypeSelect.getValue() == null) {
+                    Notification n = Notification.show("Выберите тип смены");
                     n.setPosition(Notification.Position.MIDDLE);
                     n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                } else {
+                    if (periodService.findTodayPeriods().isEmpty()) {
+                        periodService.createTodayPeriods(dayTypeSelect.getValue());
+                        List<Period> todayPeriods = periodService.findTodayPeriods();
+                        grid.setItems(todayPeriods);
+                        salesReceiver.planRequests(todayPeriods);
+                        Notification.show("Программа запущена. Количество периодов сегодня: " + todayPeriods.size());
+                    } else {
+                        Notification n = Notification.show("Программа уже была запущена сегодня");
+                        n.setPosition(Notification.Position.MIDDLE);
+                        n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    }
                 }
             } catch (Exception e) {
                 Notification n = Notification.show(
@@ -81,7 +102,7 @@ public class PeriodsView extends Div {
             }
         });
 
-        layout.add(updateDishAmount, createPeriods);
+        layout.add(updateDishAmount, dayTypeSelect, createPeriods);
         return layout;
     }
 

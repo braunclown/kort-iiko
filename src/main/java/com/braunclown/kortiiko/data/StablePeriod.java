@@ -1,7 +1,8 @@
 package com.braunclown.kortiiko.data;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalTime;
 
@@ -10,6 +11,11 @@ import java.time.LocalTime;
 public class StablePeriod extends AbstractEntity {
     private LocalTime startTime;
     private LocalTime endTime;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "day_type_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private DayType dayType;
 
     public LocalTime getStartTime() {
         return startTime;
@@ -25,5 +31,13 @@ public class StablePeriod extends AbstractEntity {
 
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    public DayType getDayType() {
+        return dayType;
+    }
+
+    public void setDayType(DayType dayType) {
+        this.dayType = dayType;
     }
 }
