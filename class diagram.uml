@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.braunclown.kortiiko.data</OriginalElement>
+  <nodes>
+    <node x="148.44176161665962" y="515.2979797979797">com.braunclown.kortiiko.data.Sale</node>
+    <node x="-615.824354657688" y="556.4068462401797">com.braunclown.kortiiko.data.AbstractEntity</node>
+    <node x="420.25570322786325" y="1193.531076581576">com.braunclown.kortiiko.data.CookOrder</node>
+    <node x="-1721.0061043285234" y="-20.788013318534865">com.braunclown.kortiiko.data.DishRepository</node>
+    <node x="-1363.5061043285234" y="90.5">com.braunclown.kortiiko.data.StablePeriodRepository</node>
+    <node x="-85.48002219755836" y="1265.531076581576">com.braunclown.kortiiko.data.Period</node>
+    <node x="-175.84455667788984" y="556.4068462401797">com.braunclown.kortiiko.data.Dish</node>
+    <node x="-1973.0061043285234" y="-180.78801331853487">com.braunclown.kortiiko.data.DayTypeRepository</node>
+    <node x="-1975.0061043285234" y="-20.788013318534865">com.braunclown.kortiiko.data.SaleRepository</node>
+    <node x="-1673.0061043285234" y="90.5">com.braunclown.kortiiko.data.UserRepository</node>
+    <node x="-1468.5061043285234" y="-258.0743618201997">com.braunclown.kortiiko.data.DishSettingRepository</node>
+    <node x="-1721.0061043285234" y="-180.78801331853487">com.braunclown.kortiiko.data.CookOrderRepository</node>
+    <node x="-642.6520532741396" y="1287.5899001109874">com.braunclown.kortiiko.data.StablePeriod</node>
+    <node x="148.44176161665962" y="760.3701019318851">com.braunclown.kortiiko.data.Mode</node>
+    <node x="-474.7962962962963" y="889.4674523007857">com.braunclown.kortiiko.data.DishSetting</node>
+    <node x="-1399.5061043285234" y="-149.5">com.braunclown.kortiiko.data.PeriodRepository</node>
+    <node x="419.75570322786325" y="650.6687014428412">com.braunclown.kortiiko.data.User</node>
+    <node x="-760.7554938956711" y="1165.1859045504991">com.braunclown.kortiiko.data.DayType</node>
+    <node x="554.2280799112091" y="977.1230410654828">com.braunclown.kortiiko.data.Role</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.braunclown.kortiiko.data.DayType" target="com.braunclown.kortiiko.data.AbstractEntity" relationship="GENERALIZATION">
+      <point x="61.5" y="4.3451720310768" />
+      <point x="-549.324354657688" y="1201.031076581576" />
+      <point x="-15.0" y="43.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.Dish" target="com.braunclown.kortiiko.data.AbstractEntity" relationship="GENERALIZATION">
+      <point x="-94.5" y="-96.0" />
+      <point x="81.5" y="0.0" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.CookOrder" target="com.braunclown.kortiiko.data.Dish" relationship="TO_ONE">
+      <point x="-97.5" y="-64.3451720310768" />
+      <point x="-66.345" y="1220.6859045504991" />
+      <point x="14.999556677889842" y="139.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.CookOrder" target="com.braunclown.kortiiko.data.AbstractEntity" relationship="GENERALIZATION">
+      <point x="0.0" y="91.5" />
+      <point x="517.7557032278633" y="1416.0899001109874" />
+      <point x="-778.2554938956711" y="1416.0899001109874" />
+      <point x="-778.2554938956711" y="599.9068462401797" />
+      <point x="-81.5" y="0.0" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.DishSetting" target="com.braunclown.kortiiko.data.Dish" relationship="TO_ONE">
+      <point x="104.5" y="0.0" />
+      <point x="-102.98002219755836" y="956.9674523007857" />
+      <point x="-21.635465519668514" y="139.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.Sale" target="com.braunclown.kortiiko.data.Dish" relationship="TO_ONE">
+      <point x="-85.0" y="0.0" />
+      <point x="94.5" y="-113.1088664422" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.Dish" target="com.braunclown.kortiiko.data.Mode" relationship="TO_ONE">
+      <point x="0.0" y="-139.5" />
+      <point x="-81.34455667788984" y="803.8701019318851" />
+      <point x="47.5" y="0.0" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.DishSetting" target="com.braunclown.kortiiko.data.AbstractEntity" relationship="GENERALIZATION">
+      <point x="-97.0" y="-67.5" />
+      <point x="67.02805836139169" y="43.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.Period" target="com.braunclown.kortiiko.data.AbstractEntity" relationship="GENERALIZATION">
+      <point x="-104.5" y="-50.941176470588516" />
+      <point x="-519.324354657688" y="1270.0899001109874" />
+      <point x="15.0" y="43.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.StablePeriod" target="com.braunclown.kortiiko.data.AbstractEntity" relationship="GENERALIZATION">
+      <point x="21.827698616451585" y="-55.5" />
+      <point x="0.0" y="43.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.Sale" target="com.braunclown.kortiiko.data.Period" relationship="TO_ONE">
+      <point x="85.00023838334039" y="2.020202032326779E-5" />
+      <point x="387.0" y="582.798" />
+      <point x="387.0" y="1321.031" />
+      <point x="104.50002219755835" y="-7.658157596779347E-5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.StablePeriod" target="com.braunclown.kortiiko.data.DayType" relationship="TO_ONE">
+      <point x="-86.5" y="0.0" />
+      <point x="-699.2554938956711" y="1343.0899001109874" />
+      <point x="0.0" y="31.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.CookOrder" target="com.braunclown.kortiiko.data.User" relationship="TO_ONE">
+      <point x="0.0" y="-91.5" />
+      <point x="0.0" y="115.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.User" target="com.braunclown.kortiiko.data.AbstractEntity" relationship="GENERALIZATION">
+      <point x="0.0" y="-115.5" />
+      <point x="517.7557032278633" y="497.7979797979797" />
+      <point x="-549.324354657688" y="497.7979797979797" />
+      <point x="-15.0" y="-43.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.CookOrder" target="com.braunclown.kortiiko.data.Period" relationship="TO_ONE">
+      <point x="-97.5" y="50.99992341842403" />
+      <point x="104.5" y="14.999923418424032" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.Period" target="com.braunclown.kortiiko.data.StablePeriod" relationship="TO_ONE">
+      <point x="-104.5" y="22.058823529411484" />
+      <point x="86.5" y="0.0" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.User" target="com.braunclown.kortiiko.data.Role" relationship="TO_MANY">
+      <point x="83.97237668334583" y="115.5" />
+      <point x="0.0" y="-43.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.DishSetting" target="com.braunclown.kortiiko.data.StablePeriod" relationship="TO_ONE">
+      <point x="-104.5" y="0.0" />
+      <point x="-504.324354657688" y="956.9674523007857" />
+      <point x="51.827698616451585" y="-55.5" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.Dish" target="com.braunclown.kortiiko.data.Dish" relationship="TO_MANY">
+      <point x="29.999556677889842" y="139.5" />
+      <point x="-51.345" y="899.1687014428412" />
+      <point x="260.9417616166596" y="899.1687014428412" />
+      <point x="260.9417616166596" y="695.9068462401797" />
+      <point x="94.5" y="0.0" />
+    </edge>
+    <edge source="com.braunclown.kortiiko.data.Sale" target="com.braunclown.kortiiko.data.AbstractEntity" relationship="GENERALIZATION">
+      <point x="-85.0" y="-43.8911335578" />
+      <point x="-534.324354657688" y="538.9068462401797" />
+      <point x="0.0" y="-43.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.801715546697039" showDependencies="true" x="-113.92346843039172" y="867.9199999999997" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
