@@ -31,6 +31,8 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
         i18n.getForm().setSubmit("Войти");
         i18n.getErrorMessage().setTitle("Неправильное имя пользователя или пароль");
         i18n.getErrorMessage().setMessage("Проверьте правильность ввода и попробуйте снова");
+        i18n.getErrorMessage().setUsername("Необходимо ввести имя пользователя");
+        i18n.getErrorMessage().setPassword("Необходимо ввести пароль");
         i18n.setAdditionalInformation(null);
         setI18n(i18n);
 
