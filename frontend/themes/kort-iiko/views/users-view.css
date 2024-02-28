@@ -13,7 +13,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  grid-column-end: -1;
+  grid-column-end: span 2;
 }
 
 .users-view .filter-layout vaadin-date-picker {

@@ -106,13 +106,14 @@ public class UsersView extends Div {
                 email.clear();
                 onSearch.run();
             });
+            resetBtn.addClassNames(LumoUtility.Flex.GROW);
             Button searchBtn = new Button("Искать / Обновить", new Icon(VaadinIcon.REFRESH));
             searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            searchBtn.addClassNames(LumoUtility.Flex.GROW);
             searchBtn.addClickListener(e -> onSearch.run());
 
-            Div actions = new Div(resetBtn, searchBtn);
-            actions.addClassName(LumoUtility.Gap.SMALL);
-            actions.addClassName("actions");
+            HorizontalLayout actions = new HorizontalLayout(resetBtn, searchBtn);
+            actions.addClassNames("actions", LumoUtility.Display.FLEX, LumoUtility.Gap.XLARGE);
 
             add(username, realName, phone, email, actions);
         }
