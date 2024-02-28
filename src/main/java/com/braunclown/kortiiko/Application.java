@@ -1,6 +1,6 @@
 package com.braunclown.kortiiko;
 
-import com.braunclown.kortiiko.data.SamplePersonRepository;
+import com.braunclown.kortiiko.data.UserRepository;
 import com.braunclown.kortiiko.services.telegram.KortiikoBot;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;
@@ -39,7 +39,7 @@ public class Application implements AppShellConfigurator {
 
     @Bean
     SqlDataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer(DataSource dataSource,
-            SqlInitializationProperties properties, SamplePersonRepository repository) {
+            SqlInitializationProperties properties, UserRepository repository) {
         // This bean ensures the database is only initialized when empty
         return new SqlDataSourceScriptDatabaseInitializer(dataSource, properties) {
             @Override

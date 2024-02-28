@@ -16,13 +16,10 @@ public class PeriodService {
 
     private StablePeriodService stablePeriodService;
     private final PeriodRepository repository;
-    private final SamplePersonRepository samplePersonRepository;
 
-    public PeriodService(PeriodRepository repository, StablePeriodService stablePeriodService,
-                         SamplePersonRepository samplePersonRepository) {
+    public PeriodService(PeriodRepository repository, StablePeriodService stablePeriodService) {
         this.repository = repository;
         this.stablePeriodService = stablePeriodService;
-        this.samplePersonRepository = samplePersonRepository;
     }
 
     public Optional<Period> get(Long id) {
