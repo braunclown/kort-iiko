@@ -68,6 +68,9 @@ public class UnableToCookDialog extends ConfirmDialog {
                 cookOrderService.update(order);
                 bot.sendAdmins(createMessage());
                 close();
+                Notification n = Notification.show("Запись обновлена");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             } catch (ObjectOptimisticLockingFailureException e) {
                 Notification n = Notification.show(
                         "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");

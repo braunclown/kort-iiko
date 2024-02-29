@@ -36,7 +36,7 @@
     padding-top: var(--lumo-space-s);
     padding-left: var(--lumo-space-l);
     padding-right: var(--lumo-space-l);
-    gap: var(--lumo-space-m);
+    gap: var(--lumo-space-l);
 }
 
 .day-type-view .grid-wrapper {

@@ -58,9 +58,12 @@ public class OrderComponent extends Div {
         cookedAmountField.setSuffixComponent(new Span(order.getDish().getMeasure()));
         Span cookedAmount = new Span(new Span("Приготовлено: "), cookedAmountField);
 
+        VerticalLayout buttonLayout = new VerticalLayout(createConfirmButton(), createUnableToCookButton());
+        buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+
         HorizontalLayout mainLayout = new HorizontalLayout(
                 new VerticalLayout(dishName, orderedAmount, cookedAmount),
-                new VerticalLayout(createConfirmButton(), createUnableToCookButton())
+                buttonLayout
         );
         mainLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
         return mainLayout;
@@ -82,6 +85,9 @@ public class OrderComponent extends Div {
                     dish.setAmount(dish.getAmount() + amountCooked);
                     dishService.update(dish);
                 }
+                Notification n = Notification.show("Запись обновлена");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             } catch (ObjectOptimisticLockingFailureException e) {
                 Notification n = Notification.show(
                         "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");

@@ -22,7 +22,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -35,6 +35,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
@@ -254,11 +255,14 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
     }
 
     private void createButtonLayout(Div editorLayoutDiv) {
-        HorizontalLayout buttonLayout = new HorizontalLayout();
+        VerticalLayout buttonLayout = new VerticalLayout();
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        cancel.addClassNames(LumoUtility.Width.FULL);
         delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        delete.addClassNames(LumoUtility.Width.FULL);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        save.addClassNames(LumoUtility.Width.FULL);
         buttonLayout.add(save, delete, cancel);
         editorLayoutDiv.add(buttonLayout);
     }
