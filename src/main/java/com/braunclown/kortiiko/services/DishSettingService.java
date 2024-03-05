@@ -44,6 +44,10 @@ public class DishSettingService {
         return repository.findAll();
     }
 
+    public List<DishSetting> findByDish(Dish dish) {
+        return repository.findByDish(dish);
+    }
+
     public int count() {
         return (int) repository.count();
     }

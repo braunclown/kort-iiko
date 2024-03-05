@@ -98,12 +98,18 @@ public class DishSettingsDialog extends Dialog {
         minAmountChildrenButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double minAmount = Double.parseDouble(minAmountField.getValue().replace(",", "."));
-                updateChildrenMinAmount(dishSetting, minAmount);
-                dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
-                        .ifPresent(d -> dishSetting = d);
-                Notification.show("Дочерние элементы обновлены");
-                openErrorDialog();
+                double minAmount = Double.parseDouble(minAmountField.getValue().replace(",", "."));
+                if (minAmount >= 0) {
+                    updateChildrenMinAmount(dishSetting, minAmount);
+                    dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
+                            .ifPresent(d -> dishSetting = d);
+                    Notification.show("Дочерние элементы обновлены");
+                    openErrorDialog();
+                } else {
+                    Notification n = Notification.show("Число должно быть неотрицательным");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
                 Notification n = Notification.show(
                         "Проверьте правильность введённых данных");
@@ -112,17 +118,24 @@ public class DishSettingsDialog extends Dialog {
             }
         });
         minAmountChildrenButton.setTooltipText("Применить настройку к дочерним группам и блюдам для данного периода");
+        minAmountChildrenButton.setVisible(!dishSetting.getDish().getChildDishes().isEmpty());
 
         minAmountPeriodsButton = new Button("Применить ко всем периодам");
         minAmountPeriodsButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double minAmount = Double.parseDouble(minAmountField.getValue().replace(",", "."));
-                updateAllPeriodsMinAmount(dishSetting.getDish(), minAmount);
-                dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
-                        .ifPresent(d -> dishSetting = d);
-                Notification.show("Настройки пополнения обновлены для всех периодов");
-                openErrorDialog();
+                double minAmount = Double.parseDouble(minAmountField.getValue().replace(",", "."));
+                if (minAmount >= 0) {
+                    updateAllPeriodsMinAmount(dishSetting.getDish(), minAmount);
+                    dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
+                            .ifPresent(d -> dishSetting = d);
+                    Notification.show("Настройки пополнения обновлены для всех периодов");
+                    openErrorDialog();
+                } else {
+                    Notification n = Notification.show("Число должно быть неотрицательным");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
                 Notification n = Notification.show(
                         "Проверьте правильность введённых данных");
@@ -137,12 +150,18 @@ public class DishSettingsDialog extends Dialog {
         minAmountDoBothButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double minAmount = Double.parseDouble(minAmountField.getValue().replace(",", "."));
-                updateChildrenAllPeriodsMinAmount(dishSetting.getDish(), minAmount);
-                dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
-                        .ifPresent(d -> dishSetting = d);
-                Notification.show("Настройки пополнения дочерних блюд обновлены для всех периодов");
-                openErrorDialog();
+                double minAmount = Double.parseDouble(minAmountField.getValue().replace(",", "."));
+                if (minAmount >= 0) {
+                    updateChildrenAllPeriodsMinAmount(dishSetting.getDish(), minAmount);
+                    dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
+                            .ifPresent(d -> dishSetting = d);
+                    Notification.show("Настройки пополнения дочерних блюд обновлены для всех периодов");
+                    openErrorDialog();
+                } else {
+                    Notification n = Notification.show("Число должно быть неотрицательным");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
                 Notification n = Notification.show(
                         "Проверьте правильность введённых данных");
@@ -153,6 +172,7 @@ public class DishSettingsDialog extends Dialog {
         minAmountDoBothButton
                 .setTooltipText("Применить настройку к дочерним группам и блюдам для всех 'стабильных' периодов с типом смены "
                         + dishSetting.getStablePeriod().getDayType().getName());
+        minAmountDoBothButton.setVisible(!dishSetting.getDish().getChildDishes().isEmpty());
 
         VerticalLayout layout = new VerticalLayout(minAmountField, minAmountChildrenButton,
                 minAmountPeriodsButton, minAmountDoBothButton);
@@ -168,31 +188,43 @@ public class DishSettingsDialog extends Dialog {
         maxAmountChildrenButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double maxAmount = Double.parseDouble(maxAmountField.getValue().replace(",", "."));
-                updateChildrenMaxAmount(dishSetting, maxAmount);
-                dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
-                        .ifPresent(d -> dishSetting = d);
-                Notification.show("Дочерние элементы обновлены");
-                openErrorDialog();
+                double maxAmount = Double.parseDouble(maxAmountField.getValue().replace(",", "."));
+                if (maxAmount >= 0) {
+                    updateChildrenMaxAmount(dishSetting, maxAmount);
+                    dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
+                            .ifPresent(d -> dishSetting = d);
+                    Notification.show("Дочерние элементы обновлены");
+                    openErrorDialog();
+                } else {
+                    Notification n = Notification.show("Число должно быть неотрицательным");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
+                Notification n = Notification.show("Проверьте правильность введённых данных");
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
         });
         maxAmountChildrenButton.setTooltipText("Применить настройку к дочерним группам и блюдам для данного периода");
+        maxAmountChildrenButton.setVisible(!dishSetting.getDish().getChildDishes().isEmpty());
 
         maxAmountPeriodsButton = new Button("Применить ко всем периодам");
         maxAmountPeriodsButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double maxAmount = Double.parseDouble(maxAmountField.getValue().replace(",", "."));
-                updateAllPeriodsMaxAmount(dishSetting.getDish(), maxAmount);
-                dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
-                        .ifPresent(d -> dishSetting = d);
-                Notification.show("Настройки пополнения обновлены для всех периодов");
-                openErrorDialog();
+                double maxAmount = Double.parseDouble(maxAmountField.getValue().replace(",", "."));
+                if (maxAmount >= 0) {
+                    updateAllPeriodsMaxAmount(dishSetting.getDish(), maxAmount);
+                    dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
+                            .ifPresent(d -> dishSetting = d);
+                    Notification.show("Настройки пополнения обновлены для всех периодов");
+                    openErrorDialog();
+                } else {
+                    Notification n = Notification.show("Число должно быть неотрицательным");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
                 Notification n = Notification.show(
                         "Проверьте правильность введённых данных");
@@ -207,12 +239,18 @@ public class DishSettingsDialog extends Dialog {
         maxAmountDoBothButton.addClickListener(event -> {
             try {
                 errorMessage = "";
-                Double maxAmount = Double.parseDouble(maxAmountField.getValue().replace(",", "."));
-                updateChildrenAllPeriodsMaxAmount(dishSetting.getDish(), maxAmount);
-                dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
-                        .ifPresent(d -> dishSetting = d);
-                Notification.show("Настройки пополнения дочерних блюд обновлены для всех периодов");
-                openErrorDialog();
+                double maxAmount = Double.parseDouble(maxAmountField.getValue().replace(",", "."));
+                if (maxAmount >= 0) {
+                    updateChildrenAllPeriodsMaxAmount(dishSetting.getDish(), maxAmount);
+                    dishSettingService.getByDishAndStablePeriod(dishSetting.getDish(), dishSetting.getStablePeriod())
+                            .ifPresent(d -> dishSetting = d);
+                    Notification.show("Настройки пополнения дочерних блюд обновлены для всех периодов");
+                    openErrorDialog();
+                } else {
+                    Notification n = Notification.show("Число должно быть неотрицательным");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
                 Notification n = Notification.show(
                         "Проверьте правильность введённых данных");
@@ -223,6 +261,7 @@ public class DishSettingsDialog extends Dialog {
         maxAmountDoBothButton
                 .setTooltipText("Применить настройку к дочерним группам и блюдам для всех 'стабильных' периодов с типом смены "
                         + dishSetting.getStablePeriod().getDayType().getName());
+        maxAmountDoBothButton.setVisible(!dishSetting.getDish().getChildDishes().isEmpty());
 
         VerticalLayout layout = new VerticalLayout(maxAmountField, maxAmountChildrenButton,
                 maxAmountPeriodsButton, maxAmountDoBothButton);
@@ -241,9 +280,11 @@ public class DishSettingsDialog extends Dialog {
         multiplicityField.setValue(dishSetting.getDish().getMultiplicity().toString());
         binder.forField(minAmountField)
                 .withConverter(new StringToDoubleConverter("Введите целое или дробное число"))
+                .withValidator(number -> number >= 0, "Число должно быть неотрицательным")
                 .bind(DishSetting::getMinAmount, DishSetting::setMinAmount);
         binder.forField(maxAmountField)
                 .withConverter(new StringToDoubleConverter("Введите целое или дробное число"))
+                .withValidator(number -> number >= 0, "Число должно быть неотрицательным")
                 .bind(DishSetting::getMaxAmount, DishSetting::setMaxAmount);
         binder.readBean(this.dishSetting);
     }

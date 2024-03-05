@@ -1,6 +1,7 @@
 package com.braunclown.kortiiko.views.dishes;
 
 import com.braunclown.kortiiko.data.Dish;
+import com.braunclown.kortiiko.data.DishSetting;
 import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.DishSettingService;
@@ -22,6 +23,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -121,10 +123,17 @@ public class EditDishDialog extends Dialog {
         amountButton.addClassName(LumoUtility.Margin.Top.AUTO);
         amountButton.addClickListener(event -> {
             try {
-                Double amount = Double.parseDouble(amountField.getValue().replace(",", "."));
-                updateChildDishAmount(dishToEdit, amount);
-                dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
-                Notification.show("Дочерние элементы обновлены");
+                double amount = Double.parseDouble(amountField.getValue().replace(",", "."));
+                if (amount >= 0) {
+                    updateChildDishAmount(dishToEdit, amount);
+                    dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
+                    Notification.show("Дочерние элементы обновлены");
+                } else {
+                    Notification n = Notification.show(
+                            "Число должно быть неотрицательным");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
                 Notification n = Notification.show(
                         "Проверьте правильность введённых данных");
@@ -147,11 +156,18 @@ public class EditDishDialog extends Dialog {
         initialAmountButton.addClassName(LumoUtility.Margin.Top.AUTO);
         initialAmountButton.addClickListener(event -> {
             try {
-                Double initialAmount = Double.parseDouble(initialAmountField.getValue()
+                double initialAmount = Double.parseDouble(initialAmountField.getValue()
                         .replace(",", "."));
-                updateChildDishInitialAmount(dishToEdit, initialAmount);
-                dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
-                Notification.show("Дочерние элементы обновлены");
+                if (initialAmount >= 0) {
+                    updateChildDishInitialAmount(dishToEdit, initialAmount);
+                    dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
+                    Notification.show("Дочерние элементы обновлены");
+                } else {
+                    Notification n = Notification.show(
+                            "Число должно быть неотрицательным");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
                 Notification n = Notification.show(
                         "Проверьте правильность введённых данных");
@@ -201,10 +217,17 @@ public class EditDishDialog extends Dialog {
         multiplicityButton.addClassName(LumoUtility.Margin.Top.AUTO);
         multiplicityButton.addClickListener(event -> {
             try {
-                Double multiplicity = Double.parseDouble(multiplicityField.getValue().replace(",", "."));
-                updateChildDishMultiplicity(dishToEdit, multiplicity);
-                dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
-                Notification.show("Дочерние элементы обновлены");
+                double multiplicity = Double.parseDouble(multiplicityField.getValue().replace(",", "."));
+                if (multiplicity > 0) {
+                    updateChildDishMultiplicity(dishToEdit, multiplicity);
+                    dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
+                    Notification.show("Дочерние элементы обновлены");
+                } else {
+                    Notification n = Notification.show(
+                            "Число должно быть положительным");
+                    n.setPosition(Notification.Position.MIDDLE);
+                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
             } catch (Exception e) {
                 Notification n = Notification.show(
                         "Проверьте правильность введённых данных");
@@ -248,13 +271,28 @@ public class EditDishDialog extends Dialog {
         binder.forField(nameField).bind("name");
         binder.forField(amountField)
                 .withConverter(new StringToDoubleConverter("Введите целое или дробное число"))
+                .withValidator(number -> number >= 0, "Число должно быть неотрицательным")
                 .bind("amount");
         binder.forField(iikoIdField).bind("iikoId");
         binder.forField(multiplicityField)
                 .withConverter(new StringToDoubleConverter("Введите целое или дробное число"))
+                .withValidator(number -> number > 0, "Число должно быть положительным")
+                .withValidator((number, context) -> {
+                    for (DishSetting dishSetting: dishSettingService.findByDish(dishToEdit)) {
+                        if (number > dishSetting.getMaxAmount() - dishSetting.getMinAmount()) {
+                            return ValidationResult.error(
+                                    "Кратность больше разности максимума и минимума для периода "
+                                            + dishSetting.getStablePeriod().getDayType().getName()
+                                            + " | " + dishSetting.getStablePeriod().getStartTime()
+                                            + "-" + dishSetting.getStablePeriod().getEndTime());
+                        }
+                    }
+                    return ValidationResult.ok();
+                })
                 .bind("multiplicity");
         binder.forField(initialAmountField)
                 .withConverter(new StringToDoubleConverter("Введите целое или дробное число"))
+                .withValidator(number -> number >= 0, "Число должно быть неотрицательным")
                 .bind("initialAmount");
         binder.forField(modeComboBox).bind("mode");
         binder.forField(measureField).bind("measure");
@@ -334,8 +372,22 @@ public class EditDishDialog extends Dialog {
     }
 
     private void updateChildDishMultiplicity(Dish dish, Double multiplicity) {
-        dish.setMultiplicity(multiplicity);
-        dishService.update(dish);
+        boolean isMultiplicityValid = true;
+        for (DishSetting dishSetting: dishSettingService.findByDish(dish)) {
+            if (multiplicity > dishSetting.getMaxAmount() - dishSetting.getMinAmount()) {
+                isMultiplicityValid = false;
+                break;
+            }
+        }
+        if (isMultiplicityValid) {
+            dish.setMultiplicity(multiplicity);
+            dishService.update(dish);
+        } else {
+            Notification n = Notification.show("Невозможно обновить "
+                    + (dish.getGroup() ? "группу ": "блюдо ") + dish.getName()
+                    + ": кратность меньше разности максимума и минимума");
+            n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
         for (Dish child: dish.getChildDishes()) {
             updateChildDishMultiplicity(child, multiplicity);
         }

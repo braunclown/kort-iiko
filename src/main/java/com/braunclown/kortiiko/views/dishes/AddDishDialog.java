@@ -97,13 +97,16 @@ public class AddDishDialog extends Dialog {
         binder.forField(nameField).bind("name");
         binder.forField(amountField)
                 .withConverter(new StringToDoubleConverter("Введите целое или дробное число"))
+                .withValidator(number -> number >= 0, "Число должно быть неотрицательным")
                 .bind("amount");
         binder.forField(iikoIdField).bind("iikoId");
         binder.forField(multiplicityField)
                 .withConverter(new StringToDoubleConverter("Введите целое или дробное число"))
+                .withValidator(number -> number > 0, "Число должно быть положительным")
                 .bind("multiplicity");
         binder.forField(initialAmountField)
                 .withConverter(new StringToDoubleConverter("Введите целое или дробное число"))
+                .withValidator(number -> number >= 0, "Число должно быть неотрицательным")
                 .bind("initialAmount");
         binder.forField(modeComboBox).bind("mode");
         binder.forField(measureField).bind("measure");
