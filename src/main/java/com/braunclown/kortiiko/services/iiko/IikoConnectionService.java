@@ -13,11 +13,13 @@ public class IikoConnectionService {
     private final String iikoAddress;
     private final String iikoUsername;
     private final String iikoPassword;
+    private final String department;
 
     public IikoConnectionService(IikoProperties iikoProperties) {
         this.iikoAddress = iikoProperties.getServerAddress();
         this.iikoUsername = iikoProperties.getUsername();
         this.iikoPassword = iikoProperties.getPassword();
+        this.department = iikoProperties.getDepartment();
     }
 
     /**
@@ -68,7 +70,11 @@ public class IikoConnectionService {
                 "\t\t\t\"periodType\": \"CUSTOM\",\n" +
                 "\t\t\t\"from\": \"2024-01-01T00:00:00.000\",\n" +
                 "\t\t\t\"to\": \"2048-02-20T00:00:00.000\"\n" +
-                "\t\t}\n" +
+                "\t\t},\n" +
+                "\t\t\"Department\": {\n" +
+                "\t\t\t\"filterType\": \"IncludeValues\",\n" +
+                "\t\t\t\"values\": [" + department + "]\n" +
+                "\t\t}" +
                 "\t}\n" +
                 "}");
         return HttpRequestsService.sendPostRequest(iikoAddress + "/api/v2/reports/olap?key=" + token, body)

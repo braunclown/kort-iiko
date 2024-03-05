@@ -1,7 +1,6 @@
 package com.braunclown.kortiiko.services.iiko;
 
 import com.braunclown.kortiiko.data.Dish;
-import com.braunclown.kortiiko.data.DishRepository;
 import com.braunclown.kortiiko.data.Period;
 import com.braunclown.kortiiko.data.Sale;
 import com.braunclown.kortiiko.services.DishService;
@@ -25,14 +24,11 @@ public class SalesImportService {
     private final DishService dishService;
     private final SaleService saleService;
     private final IikoProperties iikoProperties;
-    private final DishRepository dishRepository;
 
-    public SalesImportService(DishService dishService, SaleService saleService, IikoProperties iikoProperties,
-                              DishRepository dishRepository) {
+    public SalesImportService(DishService dishService, SaleService saleService, IikoProperties iikoProperties) {
         this.dishService = dishService;
         this.saleService = saleService;
         this.iikoProperties = iikoProperties;
-        this.dishRepository = dishRepository;
     }
 
     public List<Sale> importSales(Period period) {

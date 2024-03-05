@@ -10,6 +10,7 @@ public class IikoProperties {
     private String username;
     private String password;
     private String serverAddress;
+    private String department;
 
     public String getUsername() {
         return username;
@@ -33,5 +34,13 @@ public class IikoProperties {
 
     public void setServerAddress(String serverAddress) {
         this.serverAddress = serverAddress;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }
