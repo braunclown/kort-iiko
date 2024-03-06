@@ -8,9 +8,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
 
 @Service
 public class SalesReceiver {
@@ -18,6 +21,7 @@ public class SalesReceiver {
     private final SalesImportService salesImportService;
     private final CookOrderService cookOrderService;
     private final String timezone;
+    private final static List<ScheduledFuture<?>> tasks = new ArrayList<>();
 
     public SalesReceiver(PeriodService periodService,
                          SalesImportService salesImportService,
@@ -33,10 +37,17 @@ public class SalesReceiver {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(100);
         scheduler.initialize();
-
+        scheduler.setRemoveOnCancelPolicy(true);
+        tasks.clear();
         for (Period period: todayPeriods) {
-            scheduler.schedule(new SalesRequest(period),
-                    period.getEndTime().atZone(ZoneId.of(timezone)).toInstant());
+            tasks.add(scheduler.schedule(new SalesRequest(period),
+                    period.getEndTime().atZone(ZoneId.of(timezone)).toInstant()));
+        }
+    }
+
+    public void cancelTasks() {
+        for (ScheduledFuture<?> task: tasks) {
+            task.cancel(false);
         }
     }
 
@@ -53,7 +64,7 @@ public class SalesReceiver {
             List<Sale> sales = salesImportService.importSales(period);
             Optional<Period> nextPeriod = periodService.getNext(period);
             nextPeriod.ifPresent(value -> cookOrderService.calculateOrders(value, sales));
-            System.out.println("Hello! This is test");
+            System.out.println(OffsetDateTime.now() + " Orders have been calculated");
         }
 
     }

@@ -9,11 +9,13 @@ import com.braunclown.kortiiko.services.iiko.SalesReceiver;
 import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -33,6 +35,9 @@ import java.util.List;
 public class PeriodsView extends Div {
 
     private Grid<Period> grid;
+    private Button createPeriods;
+    private Button stopTasks;
+    private Select<DayType> dayTypeSelect;
 
     private final PeriodService periodService;
     private final SalesReceiver salesReceiver;
@@ -60,21 +65,27 @@ public class PeriodsView extends Div {
     private Component createMenu() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.addClassNames(LumoUtility.Padding.MEDIUM);
-        Button updateDishAmount = new Button("Обновить остатки блюд");
+        Button updateDishAmount = new Button("Обновить остатки блюд", new Icon(VaadinIcon.REFRESH));
         updateDishAmount.addClickListener(event -> dishService.updateAmounts());
         updateDishAmount.addClassNames(LumoUtility.Margin.Top.AUTO);
 
-        Select<DayType> dayTypeSelect = new Select<>();
+        dayTypeSelect = new Select<>();
         dayTypeSelect.setLabel("Выберите тип смены");
         dayTypeSelect.setItemLabelGenerator(DayType::getName);
         dayTypeSelect.setItems(dayTypeService.findAll());
 
-        Button createPeriods = new Button("Запустить программу");
+        layout.add(updateDishAmount, dayTypeSelect, createPeriodsButton(), createStopTasksButton());
+        changeButtonsVisibility();
+        return layout;
+    }
+
+    private Button createPeriodsButton() {
+        createPeriods = new Button("Запустить программу", new Icon(VaadinIcon.CLOCK));
         createPeriods.setTooltipText(
                 "Разбивает сегодняшний день на промежутки в соответствии со 'стабильными' периодами. " +
-                        "Заполняет этими промежутками таблицу. " +
-                        "Обновляет текущие остатки блюд.");
+                        "Заполняет этими промежутками таблицу.");
         createPeriods.addClassNames(LumoUtility.Margin.Top.AUTO);
+        createPeriods.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         createPeriods.addClickListener(event -> {
             try {
                 if (dayTypeSelect.getValue() == null) {
@@ -100,10 +111,40 @@ public class PeriodsView extends Div {
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
+            changeButtonsVisibility();
         });
+        return createPeriods;
+    }
 
-        layout.add(updateDishAmount, dayTypeSelect, createPeriods);
-        return layout;
+    private Button createStopTasksButton() {
+        stopTasks = new Button("Остановить программу", new Icon(VaadinIcon.CLOSE));
+        stopTasks.setTooltipText("Удаляет сегодняшние периоды и останавливает получение продаж и расчёт заказов");
+        stopTasks.addClassNames(LumoUtility.Margin.Top.AUTO);
+        stopTasks.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        stopTasks.addClickListener(event -> {
+            try {
+                salesReceiver.cancelTasks();
+                List<Period> todayPeriods = periodService.findTodayPeriods();
+                for (Period period: todayPeriods) {
+                    periodService.delete(period.getId());
+                }
+                Notification.show("Программа остановлена");
+            } catch (Exception e) {
+                Notification n = Notification.show(
+                        "Не удалось остановить программу");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+            grid.setItems(periodService.findTodayPeriods());
+            changeButtonsVisibility();
+        });
+        return stopTasks;
+    }
+
+    private void changeButtonsVisibility() {
+        boolean todayPeriodsExist = !periodService.findTodayPeriods().isEmpty();
+        createPeriods.setVisible(!todayPeriodsExist);
+        stopTasks.setVisible(todayPeriodsExist);
     }
 
     private Component createGrid() {
