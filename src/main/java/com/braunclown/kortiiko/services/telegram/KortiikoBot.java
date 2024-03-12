@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.Ability;
 
-import static org.telegram.abilitybots.api.objects.Locality.USER;
+import static org.telegram.abilitybots.api.objects.Locality.ALL;
 import static org.telegram.abilitybots.api.objects.Privacy.PUBLIC;
 
 @Component
@@ -22,7 +22,7 @@ public class KortiikoBot extends AbilityBot {
         return Ability
                 .builder()
                 .name("start")
-                .locality(USER)
+                .locality(ALL)
                 .privacy(PUBLIC)
                 .action(ctx -> responseHandler.replyToStart(ctx.chatId()))
                 .build();
@@ -32,7 +32,7 @@ public class KortiikoBot extends AbilityBot {
         return Ability
                 .builder()
                 .name("auth")
-                .locality(USER)
+                .locality(ALL)
                 .privacy(PUBLIC)
                 .action(ctx -> {
                     try {

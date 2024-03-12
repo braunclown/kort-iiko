@@ -2,6 +2,7 @@ package com.braunclown.kortiiko.views.dishsettings;
 
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.data.DishSetting;
+import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.data.StablePeriod;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.DishSettingService;
@@ -43,22 +44,16 @@ import java.util.Set;
 @CssImport(value = "./themes/kort-iiko/dish-grid.css", themeFor = "vaadin-grid")
 public class DishSettingsView extends Div implements BeforeEnterObserver {
     private final String STABLEPERIOD_ID = "stablePeriodID";
-    private final String STABLEPERIOD_ROUTE_TEMPLATE = "dish-settings/%s/edit";
 
     private final StablePeriodService stablePeriodService;
     private final DishSettingService dishSettingService;
     private final DishService dishService;
-    private StablePeriod currentPeriod;
 
     private TextField nameFilterField;
-    private Button nameFilterButton;
-    private Button getBackButton;
-    private Button refreshTreeGridButton;
 
     private TreeGrid<Dish> treeGrid;
-    private VerticalLayout layout = new VerticalLayout();
-    private Div periodDiv;
-    private int gridIndex;
+    private final VerticalLayout layout = new VerticalLayout();
+
     public DishSettingsView(StablePeriodService stablePeriodService,
                             DishSettingService dishSettingService,
                             DishService dishService) {
@@ -85,13 +80,13 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
     }
 
     private Component createRefreshTreeGridButton() {
-        refreshTreeGridButton = new Button("Обновить", new Icon(VaadinIcon.REFRESH));
+        Button refreshTreeGridButton = new Button("Обновить", new Icon(VaadinIcon.REFRESH));
         refreshTreeGridButton.addClickListener(event -> reloadTreeGrid());
         return refreshTreeGridButton;
     }
 
     private Component createGetBackButton() {
-        getBackButton = new Button("Вернуться к промежуткам", new Icon(VaadinIcon.ARROW_LEFT));
+        Button getBackButton = new Button("Вернуться к промежуткам", new Icon(VaadinIcon.ARROW_LEFT));
         getBackButton.addClickListener(event -> UI.getCurrent().navigate(StablePeriodsView.class));
         return getBackButton;
     }
@@ -112,7 +107,7 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
         nameFilterField.setValueChangeMode(ValueChangeMode.EAGER);
         nameFilterField.setPlaceholder("Название блюда или группы");
 
-        nameFilterButton = new Button("Искать", new Icon(VaadinIcon.SEARCH));
+        Button nameFilterButton = new Button("Искать", new Icon(VaadinIcon.SEARCH));
         nameFilterButton.addClassName(LumoUtility.Margin.Top.AUTO);
         nameFilterButton.addClickListener(event -> filterTreeGrid());
         HorizontalLayout nameFilterLayout = new HorizontalLayout(nameFilterField, nameFilterButton);
@@ -159,6 +154,9 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
             return span;
         }).setHeader("Максимальный остаток");
         treeGrid.addColumn(Dish::getMultiplicity).setHeader("Кратность");
+        treeGrid.addComponentColumn(dish ->
+                        new Span(dish.getMode() == Mode.MAX ? "До макс." : "Продажи"))
+                .setHeader("Режим пополнения");
 
         treeGrid.addComponentColumn(dish -> {
             Optional<DishSetting> currentDishSetting = dishSettingService.getByDishAndStablePeriod(dish, stablePeriod);
@@ -204,7 +202,7 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
         if (stablePeriodId.isPresent()) {
             Optional<StablePeriod> stablePeriodFromBackend = stablePeriodService.get(stablePeriodId.get());
             if (stablePeriodFromBackend.isPresent()) {
-                periodDiv = new Div("для периода " + stablePeriodFromBackend.get().getDayType().getName() + " | " +
+                Div periodDiv = new Div("для периода " + stablePeriodFromBackend.get().getDayType().getName() + " | " +
                         stablePeriodFromBackend.get().getStartTime() +
                         "-" + stablePeriodFromBackend.get().getEndTime());
                 periodDiv.addClassNames(LumoUtility.Margin.Horizontal.SMALL);
