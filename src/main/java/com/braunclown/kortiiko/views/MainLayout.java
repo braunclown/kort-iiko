@@ -33,8 +33,8 @@ public class MainLayout extends AppLayout {
 
     private H2 viewTitle;
 
-    private AuthenticatedUser authenticatedUser;
-    private AccessAnnotationChecker accessChecker;
+    private final AuthenticatedUser authenticatedUser;
+    private final AccessAnnotationChecker accessChecker;
 
     public MainLayout(AuthenticatedUser authenticatedUser, AccessAnnotationChecker accessChecker) {
         this.authenticatedUser = authenticatedUser;
@@ -71,42 +71,31 @@ public class MainLayout extends AppLayout {
 
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
-
         if (accessChecker.hasAccess(MainView.class)) {
             nav.addItem(new SideNavItem("Главная", MainView.class, LineAwesomeIcon.HOME_SOLID.create()));
-
         }
         if (accessChecker.hasAccess(OrdersView.class)) {
             nav.addItem(new SideNavItem("Заказы", OrdersView.class, LineAwesomeIcon.EDIT_SOLID.create()));
-
         }
         if (accessChecker.hasAccess(DishesView.class)) {
             nav.addItem(new SideNavItem("Блюда", DishesView.class, LineAwesomeIcon.PIZZA_SLICE_SOLID.create()));
-
         }
         if (accessChecker.hasAccess(PeriodsView.class)) {
             nav.addItem(new SideNavItem("Сегодняшние периоды", PeriodsView.class, LineAwesomeIcon.BUSINESS_TIME_SOLID.create()));
-
         }
         if (accessChecker.hasAccess(StablePeriodsView.class)) {
             nav.addItem(
                     new SideNavItem("'Стабильные' периоды", StablePeriodsView.class, LineAwesomeIcon.CLOCK_SOLID.create()));
-
         }
-        if (accessChecker.hasAccess(UsersView.class)) {
-            nav.addItem(new SideNavItem("Пользователи", UsersView.class, LineAwesomeIcon.USER_COG_SOLID.create()));
-
-        }
-
-        if (accessChecker.hasAccess(SubscriptionView.class)) {
-            nav.addItem(new SideNavItem("Telegram-чат", SubscriptionView.class, LineAwesomeIcon.TELEGRAM.create()));
-
-        }
-
         if (accessChecker.hasAccess(DayTypeView.class)) {
             nav.addItem(new SideNavItem("Типы смен", DayTypeView.class, LineAwesomeIcon.CALENDAR_SOLID.create()));
         }
-
+        if (accessChecker.hasAccess(UsersView.class)) {
+            nav.addItem(new SideNavItem("Пользователи", UsersView.class, LineAwesomeIcon.USER_COG_SOLID.create()));
+        }
+        if (accessChecker.hasAccess(SubscriptionView.class)) {
+            nav.addItem(new SideNavItem("Telegram-чат", SubscriptionView.class, LineAwesomeIcon.TELEGRAM.create()));
+        }
         return nav;
     }
 
@@ -128,9 +117,7 @@ public class MainLayout extends AppLayout {
             div.getElement().getStyle().set("align-items", "center");
             div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
             userName.add(div);
-            userName.getSubMenu().addItem("Выйти из учётной записи", e -> {
-                authenticatedUser.logout();
-            });
+            userName.getSubMenu().addItem("Выйти из учётной записи", e -> authenticatedUser.logout());
 
             layout.add(userMenu);
         } else {
