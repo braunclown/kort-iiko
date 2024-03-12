@@ -5,10 +5,12 @@ import com.braunclown.kortiiko.data.DishSetting;
 import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.DishSettingService;
+import com.braunclown.kortiiko.services.telegram.KortiikoBot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -16,18 +18,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class DishImportService {
 
     private final DishService dishService;
     private final IikoProperties iikoProperties;
     private final DishSettingService dishSettingService;
+    private final KortiikoBot bot;
 
     public DishImportService(DishService dishService,
                              IikoProperties iikoProperties,
-                             DishSettingService dishSettingService) {
+                             DishSettingService dishSettingService,
+                             KortiikoBot bot) {
         this.dishService = dishService;
         this.iikoProperties = iikoProperties;
         this.dishSettingService = dishSettingService;
+        this.bot = bot;
     }
 
     public void importDishesAndGroups() {
@@ -43,6 +49,8 @@ public class DishImportService {
             parseGroups(groupsJson);
             parseDishes(dishesJson);
         } catch (URISyntaxException | InterruptedException | IOException e) {
+            bot.sendAdmins("Произошла ошибка при импорте блюд. " +
+                    "Проверьте правильность настройки системы или сообщите разработчику об ошибке");
             throw new RuntimeException(e);
         }
     }
@@ -56,6 +64,8 @@ public class DishImportService {
             service.logout(token);
             return getIikoIdByName(dishJson, groupJson, name);
         } catch (URISyntaxException | InterruptedException | IOException e) {
+            bot.sendAdmins("Произошла ошибка при получении id блюда из iiko. " +
+                    "Проверьте правильность настройки системы или сообщите разработчику об ошибке");
             throw new RuntimeException(e);
         }
     }

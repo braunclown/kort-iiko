@@ -5,6 +5,7 @@ import com.braunclown.kortiiko.data.Period;
 import com.braunclown.kortiiko.data.Sale;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.SaleService;
+import com.braunclown.kortiiko.services.telegram.KortiikoBot;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -24,11 +25,16 @@ public class SalesImportService {
     private final DishService dishService;
     private final SaleService saleService;
     private final IikoProperties iikoProperties;
+    private final KortiikoBot bot;
 
-    public SalesImportService(DishService dishService, SaleService saleService, IikoProperties iikoProperties) {
+    public SalesImportService(DishService dishService,
+                              SaleService saleService,
+                              IikoProperties iikoProperties,
+                              KortiikoBot bot) {
         this.dishService = dishService;
         this.saleService = saleService;
         this.iikoProperties = iikoProperties;
+        this.bot = bot;
     }
 
     public List<Sale> importSales(Period period) {
@@ -50,6 +56,8 @@ public class SalesImportService {
             }
             return sales;
         } catch (URISyntaxException | InterruptedException | IOException e) {
+            bot.sendAdmins("Произошла ошибка при получении продаж из iiko. " +
+                    "Проверьте правильность настройки системы или сообщите разработчику об ошибке");
             throw new RuntimeException(e);
         }
     }
@@ -72,6 +80,8 @@ public class SalesImportService {
                         removeMilliseconds(element.getAsJsonObject().get("CloseTime").getAsString()), formatter));
                 sales.add(sale);
             } catch (Exception e) {
+                bot.sendAdmins("Произошла ошибка при чтении отчёта о продажах. " +
+                        "Проверьте правильность настройки системы или сообщите разработчику об ошибке");
                 throw new RuntimeException(e);
             }
         }

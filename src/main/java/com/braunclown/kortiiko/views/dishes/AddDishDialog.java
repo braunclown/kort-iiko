@@ -3,9 +3,7 @@ package com.braunclown.kortiiko.views.dishes;
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.services.DishService;
-import com.braunclown.kortiiko.services.DishSettingService;
 import com.braunclown.kortiiko.services.iiko.DishImportService;
-import com.braunclown.kortiiko.services.iiko.IikoProperties;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -27,8 +25,6 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 public class AddDishDialog extends Dialog {
     private TextField nameField;
     private TextField amountField;
-    private HorizontalLayout iikoIdLayout;
-    private Button iikoIdButton;
     private TextField iikoIdField;
     private TextField multiplicityField;
     private TextField initialAmountField;
@@ -37,21 +33,15 @@ public class AddDishDialog extends Dialog {
     private Checkbox isGroup;
     private ComboBox<Dish> parentGroup;
 
-    private Button closeButton;
-    private Button saveDishButton;
-
     private Dish dish;
     private final DishService dishService;
-    private final IikoProperties iikoProperties;
-    private final DishSettingService dishSettingService;
+    private final DishImportService dishImportService;
     private final BeanValidationBinder<Dish> binder;
 
     public AddDishDialog(DishService dishService,
-                         IikoProperties iikoProperties,
-                         DishSettingService dishSettingService) {
+                         DishImportService dishImportService) {
         this.dishService = dishService;
-        this.iikoProperties = iikoProperties;
-        this.dishSettingService = dishSettingService;
+        this.dishImportService = dishImportService;
         this.binder = new BeanValidationBinder<>(Dish.class);
         configureDialog();
         add(createEditingFields());
@@ -120,14 +110,11 @@ public class AddDishDialog extends Dialog {
         iikoIdField.setReadOnly(true);
         iikoIdField.setMinWidth("100px");
 
-        iikoIdButton = new Button("Запросить по названию");
+        Button iikoIdButton = new Button("Запросить по названию");
         iikoIdButton.addClassName(LumoUtility.Margin.Top.AUTO);
-        iikoIdButton.addClickListener(event -> {
-            DishImportService dishImportService = new DishImportService(dishService, iikoProperties, dishSettingService);
-            iikoIdField.setValue(dishImportService.getIikoId(nameField.getValue()));
-        });
+        iikoIdButton.addClickListener(event -> iikoIdField.setValue(dishImportService.getIikoId(nameField.getValue())));
 
-        iikoIdLayout = new HorizontalLayout(iikoIdField, iikoIdButton);
+        HorizontalLayout iikoIdLayout = new HorizontalLayout(iikoIdField, iikoIdButton);
         iikoIdLayout.setFlexGrow(1, iikoIdField);
         return iikoIdLayout;
     }
@@ -150,14 +137,14 @@ public class AddDishDialog extends Dialog {
     }
 
     private Button createCloseButton() {
-        closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
+        Button closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         closeButton.addClickListener(event -> close());
         return closeButton;
     }
 
     private Button createSaveDishButton() {
-        saveDishButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
+        Button saveDishButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
         saveDishButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveDishButton.addClickListener(event -> {
             try {

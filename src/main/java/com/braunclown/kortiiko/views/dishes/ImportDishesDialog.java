@@ -1,9 +1,6 @@
 package com.braunclown.kortiiko.views.dishes;
 
-import com.braunclown.kortiiko.services.DishService;
-import com.braunclown.kortiiko.services.DishSettingService;
 import com.braunclown.kortiiko.services.iiko.DishImportService;
-import com.braunclown.kortiiko.services.iiko.IikoProperties;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -20,16 +17,10 @@ public class ImportDishesDialog extends Dialog {
     private Button importButton;
     private Button updateButton;
     private HorizontalLayout footerLayout;
-    private final DishService dishService;
-    private final IikoProperties iikoProperties;
-    private final DishSettingService dishSettingService;
+    private final DishImportService dishImportService;
 
-    public ImportDishesDialog(DishService dishService,
-                              IikoProperties iikoProperties,
-                              DishSettingService dishSettingService) {
-        this.dishService = dishService;
-        this.iikoProperties = iikoProperties;
-        this.dishSettingService = dishSettingService;
+    public ImportDishesDialog(DishImportService dishImportService) {
+        this.dishImportService = dishImportService;
         setCloseOnEsc(false);
         setCloseOnOutsideClick(false);
         setHeaderTitle("Импортировать номенклатуру из iiko?");
@@ -79,7 +70,6 @@ public class ImportDishesDialog extends Dialog {
 
     private void importDishes() {
         footerLayout.remove(closeButton, importButton);
-        DishImportService dishImportService = new DishImportService(dishService, iikoProperties, dishSettingService);
         dishImportService.importDishesAndGroups();
         Dialog dialog = new Dialog("Импорт завершён");
         dialog.setCloseOnOutsideClick(false);
@@ -96,7 +86,6 @@ public class ImportDishesDialog extends Dialog {
 
     private void updateDishes() {
         footerLayout.remove(closeButton, importButton);
-        DishImportService dishImportService = new DishImportService(dishService, iikoProperties, dishSettingService);
         dishImportService.updateDatabase();
         Dialog dialog = new Dialog("Импорт завершён");
         dialog.setCloseOnOutsideClick(false);

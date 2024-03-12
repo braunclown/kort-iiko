@@ -6,7 +6,6 @@ import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.DishSettingService;
 import com.braunclown.kortiiko.services.iiko.DishImportService;
-import com.braunclown.kortiiko.services.iiko.IikoProperties;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -30,45 +29,30 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 public class EditDishDialog extends Dialog {
     private TextField nameField;
-    private HorizontalLayout amountLayout;
-    private Button amountButton;
     private TextField amountField;
-    private HorizontalLayout iikoIdLayout;
-    private Button iikoIdButton;
     private TextField iikoIdField;
-    private HorizontalLayout multiplicityLayout;
-    private Button multiplicityButton;
     private TextField multiplicityField;
-    private HorizontalLayout initialAmountLayout;
-    private Button initialAmountButton;
     private TextField initialAmountField;
-    private HorizontalLayout modeLayout;
-    private Button modeButton;
     private ComboBox<Mode> modeComboBox;
-    private HorizontalLayout measureLayout;
-    private Button measureButton;
     private TextField measureField;
     private Checkbox isGroup;
     private ComboBox<Dish> parentGroup;
 
-    private Button closeButton;
-    private Button saveDishButton;
-    private Button deleteDishButton;
     private Dish dishToEdit;
 
     private final DishService dishService;
-    private final IikoProperties iikoProperties;
     private final DishSettingService dishSettingService;
+    private final DishImportService dishImportService;
     private final BeanValidationBinder<Dish> binder;
 
     public EditDishDialog(Dish dishToEdit,
                           DishService dishService,
-                          IikoProperties iikoProperties,
-                          DishSettingService dishSettingService) {
+                          DishSettingService dishSettingService,
+                          DishImportService dishImportService) {
         this.dishToEdit = dishToEdit;
         this.dishService = dishService;
-        this.iikoProperties = iikoProperties;
         this.dishSettingService = dishSettingService;
+        this.dishImportService = dishImportService;
         this.binder = new BeanValidationBinder<>(Dish.class);
         configureDialog();
         add(createEditingFields());
@@ -103,14 +87,11 @@ public class EditDishDialog extends Dialog {
         iikoIdField.setReadOnly(true);
         iikoIdField.setMinWidth("100px");
 
-        iikoIdButton = new Button("Запросить по названию");
+        Button iikoIdButton = new Button("Запросить по названию");
         iikoIdButton.addClassName(LumoUtility.Margin.Top.AUTO);
-        iikoIdButton.addClickListener(event -> {
-            DishImportService dishImportService = new DishImportService(dishService, iikoProperties, dishSettingService);
-            iikoIdField.setValue(dishImportService.getIikoId(nameField.getValue()));
-        });
+        iikoIdButton.addClickListener(event -> iikoIdField.setValue(dishImportService.getIikoId(nameField.getValue())));
 
-        iikoIdLayout = new HorizontalLayout(iikoIdField, iikoIdButton);
+        HorizontalLayout iikoIdLayout = new HorizontalLayout(iikoIdField, iikoIdButton);
         iikoIdLayout.setFlexGrow(1, iikoIdField);
         return iikoIdLayout;
     }
@@ -119,7 +100,7 @@ public class EditDishDialog extends Dialog {
         amountField = new TextField("Остатки (текущие)");
         amountField.setMinWidth("100px");
 
-        amountButton = new Button("Обновить детей");
+        Button amountButton = new Button("Обновить детей");
         amountButton.addClassName(LumoUtility.Margin.Top.AUTO);
         amountButton.addClickListener(event -> {
             try {
@@ -143,7 +124,7 @@ public class EditDishDialog extends Dialog {
         });
         amountButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
 
-        amountLayout = new HorizontalLayout(amountField, amountButton);
+        HorizontalLayout amountLayout = new HorizontalLayout(amountField, amountButton);
         amountLayout.setFlexGrow(1, amountField);
         return amountLayout;
     }
@@ -152,7 +133,7 @@ public class EditDishDialog extends Dialog {
         initialAmountField = new TextField("Остатки по умолчанию (на начало смены)");
         initialAmountField.setMinWidth("100px");
 
-        initialAmountButton = new Button("Обновить детей");
+        Button initialAmountButton = new Button("Обновить детей");
         initialAmountButton.addClassName(LumoUtility.Margin.Top.AUTO);
         initialAmountButton.addClickListener(event -> {
             try {
@@ -177,7 +158,7 @@ public class EditDishDialog extends Dialog {
         });
         initialAmountButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
 
-        initialAmountLayout = new HorizontalLayout(initialAmountField, initialAmountButton);
+        HorizontalLayout initialAmountLayout = new HorizontalLayout(initialAmountField, initialAmountButton);
         initialAmountLayout.setFlexGrow(1, initialAmountField);
         return initialAmountLayout;
     }
@@ -188,7 +169,13 @@ public class EditDishDialog extends Dialog {
         modeComboBox.setItemLabelGenerator(m -> (m == Mode.MAX) ? "До макс." : "Продажи");
         modeComboBox.setMinWidth("100px");
 
-        modeButton = new Button("Обновить детей");
+        HorizontalLayout modeLayout = new HorizontalLayout(modeComboBox, createModeButton());
+        modeLayout.setFlexGrow(1, modeComboBox);
+        return modeLayout;
+    }
+
+    private Button createModeButton() {
+        Button modeButton = new Button("Обновить детей");
         modeButton.addClassName(LumoUtility.Margin.Top.AUTO);
         modeButton.addClickListener(event -> {
             try {
@@ -203,17 +190,14 @@ public class EditDishDialog extends Dialog {
             }
         });
         modeButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
-
-        modeLayout = new HorizontalLayout(modeComboBox, modeButton);
-        modeLayout.setFlexGrow(1, modeComboBox);
-        return modeLayout;
+        return modeButton;
     }
 
     private HorizontalLayout createMultiplicityLayout() {
         multiplicityField = new TextField("Кратность (какое количество может приготовить повар)");
         multiplicityField.setMinWidth("100px");
 
-        multiplicityButton = new Button("Обновить детей");
+        Button multiplicityButton = new Button("Обновить детей");
         multiplicityButton.addClassName(LumoUtility.Margin.Top.AUTO);
         multiplicityButton.addClickListener(event -> {
             try {
@@ -237,7 +221,7 @@ public class EditDishDialog extends Dialog {
         });
         multiplicityButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
 
-        multiplicityLayout = new HorizontalLayout(multiplicityField, multiplicityButton);
+        HorizontalLayout multiplicityLayout = new HorizontalLayout(multiplicityField, multiplicityButton);
         multiplicityLayout.setFlexGrow(1, multiplicityField);
         return multiplicityLayout;
     }
@@ -246,7 +230,7 @@ public class EditDishDialog extends Dialog {
         measureField = new TextField("Единица измерения");
         measureField.setMinWidth("100px");
 
-        measureButton = new Button("Обновить детей");
+        Button measureButton = new Button("Обновить детей");
         measureButton.addClassName(LumoUtility.Margin.Top.AUTO);
         measureButton.addClickListener(event -> {
             try {
@@ -262,7 +246,7 @@ public class EditDishDialog extends Dialog {
         });
         measureButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
 
-        measureLayout = new HorizontalLayout(measureField, measureButton);
+        HorizontalLayout measureLayout = new HorizontalLayout(measureField, measureButton);
         measureLayout.setFlexGrow(1, measureField);
         return measureLayout;
     }
@@ -314,14 +298,14 @@ public class EditDishDialog extends Dialog {
     }
 
     private Button createCloseButton() {
-        closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
+        Button closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         closeButton.addClickListener(event -> close());
         return closeButton;
     }
 
     private Button createDeleteDishButton() {
-        deleteDishButton = new Button("Удалить", new Icon(VaadinIcon.TRASH));
+        Button deleteDishButton = new Button("Удалить", new Icon(VaadinIcon.TRASH));
         deleteDishButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         deleteDishButton.addClickListener(event -> {
             dishService.cascadeDelete(dishToEdit);
@@ -331,7 +315,7 @@ public class EditDishDialog extends Dialog {
     }
 
     private Button createSaveDishButton() {
-        saveDishButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
+        Button saveDishButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
         saveDishButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveDishButton.addClickListener(event -> {
             try {
