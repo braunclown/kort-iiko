@@ -89,7 +89,8 @@ public class UnableToCookDialog extends ConfirmDialog {
 
     private String createMessage() {
         StringBuilder message = new StringBuilder("Повар " + currentUser.getRealName()
-                + " не может приготовить блюдо " + order.getDish().getName() + ".\n");
+                + " (" + currentUser.getPhone() + ", " + currentUser.getEmail()
+                + ") не может приготовить блюдо " + order.getDish().getName() + ".\n");
         if (!reasons.getSelectedItems().isEmpty()) {
             message.append("Указаны причины: \n");
             for (String reason: reasons.getSelectedItems()) {
