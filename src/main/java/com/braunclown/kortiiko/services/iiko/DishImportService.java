@@ -83,15 +83,15 @@ public class DishImportService {
             groupList.add(groupPrototype);
         }
 
-        // Фильтруем
-        DishGroupFilterService filterService = new DishGroupFilterService();
-        List<GroupPrototype> dishGroups = filterService.filterGroups(groupList);
+        // Раньше фильтровали, теперь не фильтруем
+        // DishGroupFilterService filterService = new DishGroupFilterService();
+        // List<GroupPrototype> dishGroups = filterService.filterGroups(groupList);
 
         // Сохраняем в БД
-        addGroupsToDatabase(dishGroups);
+        addGroupsToDatabase(groupList);
 
         // Устанавливаем иерархию
-        for (GroupPrototype dishGroup: dishGroups) {
+        for (GroupPrototype dishGroup: groupList) {
             if (dishGroup.getParentIikoId() != null) {
                 Dish registeredGroup = dishService.getByIikoId(dishGroup.getIikoId());
                 registeredGroup.setParentGroup(dishService.getByIikoId(dishGroup.getParentIikoId()));
