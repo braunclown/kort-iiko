@@ -10,7 +10,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -20,6 +20,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
@@ -50,19 +51,27 @@ public class OrderComponent extends Div {
     }
 
     private Component createLayout() {
-        H3 dishName = new H3(order.getDish().getName());
+        H5 dishName = new H5(order.getDish().getName());
         Span orderedAmount = new Span("Требуется: " + order.getAmountOrdered()
                 + " " + order.getDish().getMeasure());
         cookedAmountField = new NumberField();
+        cookedAmountField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
         cookedAmountField.setValue(order.getAmountOrdered());
         cookedAmountField.setSuffixComponent(new Span(order.getDish().getMeasure()));
-        Span cookedAmount = new Span(new Span("Приготовлено: "), cookedAmountField);
+        Span cookedLabel = new Span("Приготовлено: ");
+        cookedLabel.addClassName(LumoUtility.Margin.Top.AUTO);
+        HorizontalLayout cookedAmount = new HorizontalLayout(cookedLabel, cookedAmountField);
+
+        VerticalLayout infoLayout = new VerticalLayout(dishName, orderedAmount, cookedAmount);
+        infoLayout.addClassNames(LumoUtility.Gap.XSMALL, LumoUtility.Padding.XSMALL);
+        infoLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 
         VerticalLayout buttonLayout = new VerticalLayout(createConfirmButton(), createUnableToCookButton());
+        buttonLayout.addClassNames(LumoUtility.Padding.XSMALL);
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 
         HorizontalLayout mainLayout = new HorizontalLayout(
-                new VerticalLayout(dishName, orderedAmount, cookedAmount),
+                infoLayout,
                 buttonLayout
         );
         mainLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);

@@ -36,12 +36,8 @@ public class OrdersView extends VerticalLayout {
     private final DishService dishService;
     private final AuthenticatedUser authenticatedUser;
     private final KortiikoBot bot;
-    private List<CookOrder> orders;
-    private Period period;
-    private Button refreshButton;
-    private SimpleTimer timer;
+    private final Period period;
     private H3 caption;
-    private VerticalLayout orderLayout;
 
     public OrdersView(CookOrderService cookOrderService,
                       PeriodService periodService,
@@ -60,7 +56,7 @@ public class OrdersView extends VerticalLayout {
     }
 
     private Component createLayout() {
-        orderLayout = new VerticalLayout();
+        VerticalLayout orderLayout = new VerticalLayout();
         caption = new H3();
         HorizontalLayout menuLayout = new HorizontalLayout();
         menuLayout.add(caption, createRefreshButton());
@@ -68,7 +64,7 @@ public class OrdersView extends VerticalLayout {
         orderLayout.add(menuLayout);
         if (period != null) {
             caption.setText("Заказы на текущий период");
-            orders = getCurrentOrders();
+            List<CookOrder> orders = getCurrentOrders();
             orderLayout.add(createTimer());
             for (CookOrder cookOrder: orders) {
                 orderLayout.add(new OrderComponent(cookOrder, cookOrderService, dishService, authenticatedUser, bot));
@@ -76,26 +72,26 @@ public class OrdersView extends VerticalLayout {
         } else {
             caption.setText("Следующий период не найден. Заказов нет");
         }
+        orderLayout.addClassNames(LumoUtility.Gap.SMALL);
         return orderLayout;
     }
 
     private Component createTimer() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.addClassNames(LumoUtility.FontSize.LARGE);
-        timer = new SimpleTimer(ChronoUnit.SECONDS.between(LocalDateTime.now(), period.getEndTime()));
+        SimpleTimer timer = new SimpleTimer(ChronoUnit.SECONDS.between(LocalDateTime.now(), period.getEndTime()));
         timer.setHours(true);
         timer.setMinutes(true);
         timer.setFractions(false);
         timer.start();
-        timer.addTimerEndEvent(event -> {
-            caption.setText("Период закончился. Обновите страницу для получения новых заказов");
-        });
+        timer.addTimerEndEvent(event ->
+                caption.setText("Период закончился. Обновите страницу для получения новых заказов"));
         layout.add(new Span("До конца периода осталось "), timer);
         return layout;
     }
 
     private Button createRefreshButton() {
-        refreshButton = new Button("Обновить", new Icon(VaadinIcon.REFRESH));
+        Button refreshButton = new Button("Обновить", new Icon(VaadinIcon.REFRESH));
         refreshButton.addClickListener(event -> UI.getCurrent().getPage().reload());
         return refreshButton;
     }
