@@ -19,7 +19,6 @@ public class User extends AbstractEntity {
     private String hashedPassword;
     private String email;
     private String phone;
-    private Boolean isActive;
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Role> roles;
@@ -60,13 +59,6 @@ public class User extends AbstractEntity {
         this.phone = phone;
     }
 
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
 
     public Set<Role> getRoles() {
         return roles;

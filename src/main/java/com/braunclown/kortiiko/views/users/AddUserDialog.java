@@ -31,14 +31,11 @@ public class AddUserDialog extends Dialog {
     private TextField phoneField;
     private CheckboxGroup<Role> roles;
 
-    private Button closeButton;
-    private Button saveUserButton;
-
     private User userToEdit;
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private BeanValidationBinder<User> binder;
+    private final BeanValidationBinder<User> binder;
 
     public AddUserDialog(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
@@ -82,7 +79,7 @@ public class AddUserDialog extends Dialog {
     }
 
     private Button createCloseButton() {
-        closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
+        Button closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         closeButton.addClickListener(event -> close());
         return closeButton;
@@ -100,7 +97,7 @@ public class AddUserDialog extends Dialog {
 
 
     private Button createSaveUserButton() {
-        saveUserButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
+        Button saveUserButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
         saveUserButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveUserButton.addClickListener(event -> {
             try {
@@ -109,7 +106,6 @@ public class AddUserDialog extends Dialog {
                 }
                 binder.writeBean(this.userToEdit);
                 this.userToEdit.setHashedPassword(passwordEncoder.encode(passwordField.getValue()));
-                this.userToEdit.setActive(true);
                 userService.update(this.userToEdit);
                 close();
             } catch (ObjectOptimisticLockingFailureException exception) {

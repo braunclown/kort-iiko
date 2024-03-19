@@ -11,7 +11,6 @@ import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -39,7 +38,7 @@ public class UsersView extends Div {
 
     private Grid<User> grid;
 
-    private Filters filters;
+    private final Filters filters;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
@@ -49,7 +48,7 @@ public class UsersView extends Div {
         setSizeFull();
         addClassNames("users-view");
 
-        filters = new Filters(() -> refreshGrid());
+        filters = new Filters(this::refreshGrid);
         VerticalLayout layout = new VerticalLayout(createMobileFilters(), filters, createGrid());
         layout.setSizeFull();
         layout.setPadding(false);
@@ -183,8 +182,6 @@ public class UsersView extends Div {
         grid.addColumn("phone").setAutoWidth(true).setHeader("Телефон");
         grid.addComponentColumn(user -> new Icon(user.getChatId() == null ? VaadinIcon.CLOSE : VaadinIcon.CHECK))
                 .setAutoWidth(true).setHeader("Чат ТГ");
-        grid.addComponentColumn(user -> new Paragraph(user.getActive() ? "Да" : "Нет"))
-                .setAutoWidth(true).setHeader("Активен");
         grid.addComponentColumn(user -> {
             String content = "";
             if (user.getRoles().contains(Role.ADMIN)) {
