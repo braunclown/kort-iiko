@@ -101,6 +101,7 @@ public class EditDishDialog extends Dialog {
         amountField.setMinWidth("100px");
 
         Button amountButton = new Button("Обновить детей");
+        amountButton.setTooltipText("Обновить остатки данной группы и всех вложенных подгрупп и блюд");
         amountButton.addClassName(LumoUtility.Margin.Top.AUTO);
         amountButton.addClickListener(event -> {
             try {
@@ -134,6 +135,7 @@ public class EditDishDialog extends Dialog {
         initialAmountField.setMinWidth("100px");
 
         Button initialAmountButton = new Button("Обновить детей");
+        initialAmountButton.setTooltipText("Обновить остатки по умолчанию данной группы и всех вложенных подгрупп и блюд");
         initialAmountButton.addClassName(LumoUtility.Margin.Top.AUTO);
         initialAmountButton.addClickListener(event -> {
             try {
@@ -176,6 +178,7 @@ public class EditDishDialog extends Dialog {
 
     private Button createModeButton() {
         Button modeButton = new Button("Обновить детей");
+        modeButton.setTooltipText("Обновить режим пополнения данной группы и всех вложенных подгрупп и блюд");
         modeButton.addClassName(LumoUtility.Margin.Top.AUTO);
         modeButton.addClickListener(event -> {
             try {
@@ -198,6 +201,7 @@ public class EditDishDialog extends Dialog {
         multiplicityField.setMinWidth("100px");
 
         Button multiplicityButton = new Button("Обновить детей");
+        multiplicityButton.setTooltipText("Обновить кратность данной группы и всех вложенных подгрупп и блюд");
         multiplicityButton.addClassName(LumoUtility.Margin.Top.AUTO);
         multiplicityButton.addClickListener(event -> {
             try {
@@ -231,6 +235,7 @@ public class EditDishDialog extends Dialog {
         measureField.setMinWidth("100px");
 
         Button measureButton = new Button("Обновить детей");
+        measureButton.setTooltipText("Обновить единицу измерения данной группы и всех вложенных подгрупп и блюд");
         measureButton.addClassName(LumoUtility.Margin.Top.AUTO);
         measureButton.addClickListener(event -> {
             try {

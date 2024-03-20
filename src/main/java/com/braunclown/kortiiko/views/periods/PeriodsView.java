@@ -66,6 +66,7 @@ public class PeriodsView extends Div {
         HorizontalLayout layout = new HorizontalLayout();
         layout.addClassNames(LumoUtility.Padding.MEDIUM);
         Button updateDishAmount = new Button("Обновить остатки блюд", new Icon(VaadinIcon.REFRESH));
+        updateDishAmount.setTooltipText("Текущие остатки каждого блюда станут равными соответствующим остаткам по умолчанию");
         updateDishAmount.addClickListener(event -> dishService.updateAmounts());
         updateDishAmount.addClassNames(LumoUtility.Margin.Top.AUTO);
 
