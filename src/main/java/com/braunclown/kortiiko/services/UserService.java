@@ -51,9 +51,6 @@ public class UserService {
         return repository.findByRolesContains(Role.ADMIN);
     }
 
-    public User findByUsername(String username) {
-        return repository.findByUsername(username);
-    }
 
     public int count() {
         return (int) repository.count();

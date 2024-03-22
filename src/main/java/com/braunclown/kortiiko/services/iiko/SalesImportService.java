@@ -71,14 +71,14 @@ public class SalesImportService {
         for (JsonElement element: data) {
             try {
                 Sale sale = new Sale();
-                Dish dish = dishService.getByIikoId(element.getAsJsonObject().get("DishId").getAsString());
-                if (dish == null) continue;
-                sale.setDish(dish);
-                sale.setAmount(element.getAsJsonObject().get("DishAmountInt").getAsDouble());
-                sale.setPeriod(period);
-                sale.setTime(LocalDateTime.parse(
-                        removeMilliseconds(element.getAsJsonObject().get("CloseTime").getAsString()), formatter));
-                sales.add(sale);
+                dishService.getByIikoId(element.getAsJsonObject().get("DishId").getAsString()).ifPresent(dish -> {
+                    sale.setDish(dish);
+                    sale.setAmount(element.getAsJsonObject().get("DishAmountInt").getAsDouble());
+                    sale.setPeriod(period);
+                    sale.setTime(LocalDateTime.parse(
+                            removeMilliseconds(element.getAsJsonObject().get("CloseTime").getAsString()), formatter));
+                    sales.add(sale);
+                });
             } catch (Exception e) {
                 bot.sendAdmins("Произошла ошибка при чтении отчёта о продажах. " +
                         "Проверьте правильность настройки системы или сообщите разработчику об ошибке");

@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class PeriodService {
 
-    private StablePeriodService stablePeriodService;
+    private final StablePeriodService stablePeriodService;
     private final PeriodRepository repository;
 
     public PeriodService(PeriodRepository repository, StablePeriodService stablePeriodService) {

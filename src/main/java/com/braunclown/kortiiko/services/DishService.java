@@ -23,7 +23,7 @@ public class DishService {
         return repository.findById(id);
     }
 
-    public Dish getByIikoId(String iikoId) {
+    public Optional<Dish> getByIikoId(String iikoId) {
         return repository.findByIikoId(iikoId);
     }
 

@@ -93,9 +93,12 @@ public class DishImportService {
         // Устанавливаем иерархию
         for (GroupPrototype dishGroup: groupList) {
             if (dishGroup.getParentIikoId() != null) {
-                Dish registeredGroup = dishService.getByIikoId(dishGroup.getIikoId());
-                registeredGroup.setParentGroup(dishService.getByIikoId(dishGroup.getParentIikoId()));
-                dishService.update(registeredGroup);
+                dishService.getByIikoId(dishGroup.getIikoId()).ifPresent(registeredGroup -> {
+                    dishService.getByIikoId(dishGroup.getParentIikoId()).ifPresent(parent -> {
+                        registeredGroup.setParentGroup(parent);
+                        dishService.update(registeredGroup);
+                    });
+                });
             }
         }
     }
@@ -129,7 +132,8 @@ public class DishImportService {
             dish.setMeasure("ед.");
             dish.setGroup(false);
             if (!dishObject.get("parent").isJsonNull()) {
-                dish.setParentGroup(dishService.getByIikoId(dishObject.get("parent").getAsString()));
+                Optional<Dish> parent = dishService.getByIikoId(dishObject.get("parent").getAsString());
+                parent.ifPresent(dish::setParentGroup);
             }
             dishService.update(dish);
         }
@@ -157,8 +161,7 @@ public class DishImportService {
         importDishesAndGroups();
         List<Dish> dishes = dishService.findAll();
         for (Dish dish: dishes) {
-            Dish finalDish = dish;
-            Optional<Dish> reserveDish = dishesReserve.stream().filter(d -> d.getIikoId().equals(finalDish.getIikoId())).findFirst();
+            Optional<Dish> reserveDish = dishesReserve.stream().filter(d -> d.getIikoId().equals(dish.getIikoId())).findFirst();
             if (reserveDish.isPresent()) {
                 Dish d = reserveDish.get();
                 dish.setAmount(d.getAmount());
@@ -168,7 +171,7 @@ public class DishImportService {
                 dish.setMultiplicity(d.getMultiplicity());
                 dishService.update(dish);
                 List<DishSetting> dishSettings = settingsReserve.stream()
-                        .filter(ds -> ds.getDish().getIikoId().equals(finalDish.getIikoId())).toList();
+                        .filter(ds -> ds.getDish().getIikoId().equals(dish.getIikoId())).toList();
                 for (DishSetting ds: dishSettings) {
                     DishSetting newSetting = new DishSetting();
                     newSetting.setDish(dish);
