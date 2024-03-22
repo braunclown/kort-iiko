@@ -50,7 +50,10 @@ public class SalesImportService {
                 Optional<Dish> optionalDish = dishService.get(sale.getDish().getId());
                 if (optionalDish.isPresent()) {
                     Dish dish = optionalDish.get();
-                    dish.setAmount(dish.getAmount() < sale.getAmount() ? 0: dish.getAmount() - sale.getAmount());
+                    dish.setAmount(dish.getAmount() - sale.getAmount());
+                    if (dish.getAmount() < 0) {
+                        bot.sendAdmins("Блюдо '" + dish.getName() + "': после получения продаж остатки стали отрицательными (" + dish.getAmount() + ")");
+                    }
                     dishService.update(dish);
                 }
             }

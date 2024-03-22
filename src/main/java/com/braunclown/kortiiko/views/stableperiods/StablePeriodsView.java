@@ -1,12 +1,8 @@
 package com.braunclown.kortiiko.views.stableperiods;
 
 import com.braunclown.kortiiko.data.DayType;
-import com.braunclown.kortiiko.data.Dish;
-import com.braunclown.kortiiko.data.DishSetting;
 import com.braunclown.kortiiko.data.StablePeriod;
 import com.braunclown.kortiiko.services.DayTypeService;
-import com.braunclown.kortiiko.services.DishService;
-import com.braunclown.kortiiko.services.DishSettingService;
 import com.braunclown.kortiiko.services.StablePeriodService;
 import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.UI;
@@ -68,17 +64,11 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
     private StablePeriod stablePeriod;
 
     private final StablePeriodService stablePeriodService;
-    private final DishSettingService dishSettingService;
-    private final DishService dishService;
     private final DayTypeService dayTypeService;
 
     public StablePeriodsView(StablePeriodService stablePeriodService,
-                             DishSettingService dishSettingService,
-                             DishService dishService,
                              DayTypeService dayTypeService) {
         this.stablePeriodService = stablePeriodService;
-        this.dishSettingService = dishSettingService;
-        this.dishService = dishService;
         this.dayTypeService = dayTypeService;
         addClassNames("stable-periods-view");
 
@@ -97,9 +87,8 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
         periodGrid.addColumn("endTime").setAutoWidth(true).setSortable(true).setHeader("Время конца");
         periodGrid.addComponentColumn(stablePeriod -> {
             Button button = new Button("К настройкам пополнения", new Icon(VaadinIcon.EDIT));
-            button.addClickListener(event -> {
-                UI.getCurrent().navigate(String.format(DISHSETTING_EDIT_ROUTE_TEMPLATE, stablePeriod.getId()));
-            });
+            button.addClickListener(event ->
+                    UI.getCurrent().navigate(String.format(DISHSETTING_EDIT_ROUTE_TEMPLATE, stablePeriod.getId())));
             button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             return button;
         });
@@ -193,9 +182,7 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
                 }
                 binder.writeBean(this.stablePeriod);
                 stablePeriodService.update(this.stablePeriod);
-                for (Dish dish: dishService.findAll()) {
-                    initDishSetting(dish, this.stablePeriod);
-                }
+
                 clearForm();
                 refreshGrid();
                 Notification.show("Запись обновлена");
@@ -290,15 +277,4 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
 
     }
 
-    private void initDishSetting(Dish dish, StablePeriod stablePeriod) {
-        Optional<DishSetting> dishSetting = dishSettingService.getByDishAndStablePeriod(dish, stablePeriod);
-        if (dishSetting.isEmpty()) {
-            DishSetting ds = new DishSetting();
-            ds.setMinAmount(dish.getMultiplicity());
-            ds.setMaxAmount(dish.getMultiplicity() * 2);
-            ds.setDish(dish);
-            ds.setStablePeriod(stablePeriod);
-            dishSettingService.update(ds);
-        }
-    }
 }
