@@ -70,7 +70,8 @@ public class CookOrderService {
                     }
                 } else {
                     bot.sendAdmins("Внимание! Режим пополнения для блюда " + dish.getName()
-                            + ", периода " + period.getStablePeriod() + "-" + period.getEndTime() + " не настроен");
+                            + ", периода " + period.getStablePeriod().getStartTime() + "-"
+                            + period.getStablePeriod().getEndTime() + " не настроен");
                 }
 
             } else {

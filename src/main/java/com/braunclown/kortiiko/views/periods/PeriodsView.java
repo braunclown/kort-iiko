@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.periods;
 
+import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.DayType;
 import com.braunclown.kortiiko.data.Period;
 import com.braunclown.kortiiko.services.DayTypeService;
@@ -90,9 +91,7 @@ public class PeriodsView extends Div {
         createPeriods.addClickListener(event -> {
             try {
                 if (dayTypeSelect.getValue() == null) {
-                    Notification n = Notification.show("Выберите тип смены");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Выберите тип смены");
                 } else {
                     if (periodService.findTodayPeriods().isEmpty()) {
                         periodService.createTodayPeriods(dayTypeSelect.getValue());
@@ -107,10 +106,7 @@ public class PeriodsView extends Div {
                     }
                 }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Не удалось запустить программу");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Не удалось запустить программу");
             }
             changeButtonsVisibility();
         });
@@ -131,10 +127,7 @@ public class PeriodsView extends Div {
                 }
                 Notification.show("Программа остановлена");
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Не удалось остановить программу");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Не удалось остановить программу");
             }
             grid.setItems(periodService.findTodayPeriods());
             changeButtonsVisibility();

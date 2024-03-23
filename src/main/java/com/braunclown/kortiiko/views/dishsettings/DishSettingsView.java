@@ -140,23 +140,23 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
         List<Dish> roots = dishService.findRoots();
         treeGrid.setItems(roots, this::getChildren);
         treeGrid.addHierarchyColumn(Dish::getName).setHeader("Название")
-                .setAutoWidth(true).setFlexGrow(1).setResizable(true);
+                .setAutoWidth(true).setFlexGrow(1).setResizable(true).setSortable(true);
         treeGrid.addComponentColumn(dish -> {
             Optional<DishSetting> currentDishSetting = dishSettingService.getByDishAndStablePeriod(dish, stablePeriod);
             Span span = new Span("Не задано");
             currentDishSetting.ifPresent(dishSetting -> span.setText(dishSetting.getMinAmount().toString()));
             return span;
-        }).setHeader("Минимальный остаток");
+        }).setHeader("Минимальный остаток").setSortable(true);
         treeGrid.addComponentColumn(dish -> {
             Optional<DishSetting> currentDishSetting = dishSettingService.getByDishAndStablePeriod(dish, stablePeriod);
             Span span = new Span("Не задано");
             currentDishSetting.ifPresent(dishSetting -> span.setText(dishSetting.getMaxAmount().toString()));
             return span;
-        }).setHeader("Максимальный остаток");
+        }).setHeader("Максимальный остаток").setSortable(true);
         treeGrid.addColumn(Dish::getMultiplicity).setHeader("Кратность");
         treeGrid.addComponentColumn(dish ->
                         new Span(dish.getMode() == Mode.MAX ? "До макс." : "Продажи"))
-                .setHeader("Режим пополнения");
+                .setHeader("Режим пополнения").setSortable(true);
 
         treeGrid.addComponentColumn(dish -> {
             Optional<DishSetting> currentDishSetting = dishSettingService.getByDishAndStablePeriod(dish, stablePeriod);

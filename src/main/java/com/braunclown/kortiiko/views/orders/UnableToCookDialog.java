@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.orders;
 
+import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.CookOrder;
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.services.CookOrderService;
@@ -72,15 +73,10 @@ public class UnableToCookDialog extends ConfirmDialog {
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             } catch (ObjectOptimisticLockingFailureException e) {
-                Notification n = Notification.show(
-                        "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Невозможно обновить запись. " +
+                        "Кто-то другой обновил запись, пока вы вносили изменения");
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Произошла ошибка");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Произошла ошибка");
             }
         });
         setConfirmButton(sendReasonsButton);
