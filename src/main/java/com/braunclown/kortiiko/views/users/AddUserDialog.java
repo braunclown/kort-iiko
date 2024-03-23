@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.users;
 
+import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.Role;
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.services.UserService;
@@ -11,8 +12,6 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -109,12 +108,10 @@ public class AddUserDialog extends Dialog {
                 userService.update(this.userToEdit);
                 close();
             } catch (ObjectOptimisticLockingFailureException exception) {
-                Notification n = Notification.show(
-                        "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Невозможно обновить запись. " +
+                        "Кто-то другой обновил запись, пока вы вносили изменения");
             } catch (ValidationException validationException) {
-                Notification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
+                ErrorNotification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
             }
         });
         return saveUserButton;

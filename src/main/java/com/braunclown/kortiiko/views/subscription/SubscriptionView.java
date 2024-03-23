@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.subscription;
 
+import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.security.AuthenticatedUser;
 import com.braunclown.kortiiko.services.UserService;
@@ -61,12 +62,10 @@ public class SubscriptionView extends VerticalLayout {
                     n.setPosition(Notification.Position.MIDDLE);
                     n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 } catch (ObjectOptimisticLockingFailureException exception) {
-                    Notification n = Notification.show(
-                            "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Невозможно обновить запись. " +
+                            "Кто-то другой обновил запись, пока вы вносили изменения");
                 } catch (ValidationException validationException) {
-                    Notification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
+                    ErrorNotification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
                 }
             });
         }

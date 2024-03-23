@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.dishes;
 
+import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.data.DishSetting;
 import com.braunclown.kortiiko.data.Mode;
@@ -111,16 +112,10 @@ public class EditDishDialog extends Dialog {
                     dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                     Notification.show("Дочерние элементы обновлены");
                 } else {
-                    Notification n = Notification.show(
-                            "Число должно быть неотрицательным");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Число должно быть неотрицательным");
                 }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         amountButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
@@ -146,16 +141,10 @@ public class EditDishDialog extends Dialog {
                     dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                     Notification.show("Дочерние элементы обновлены");
                 } else {
-                    Notification n = Notification.show(
-                            "Число должно быть неотрицательным");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Число должно быть неотрицательным");
                 }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         initialAmountButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
@@ -186,10 +175,7 @@ public class EditDishDialog extends Dialog {
                 dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                 Notification.show("Дочерние элементы обновлены");
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         modeButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
@@ -211,16 +197,10 @@ public class EditDishDialog extends Dialog {
                     dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                     Notification.show("Дочерние элементы обновлены");
                 } else {
-                    Notification n = Notification.show(
-                            "Число должно быть положительным");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Число должно быть положительным");
                 }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         multiplicityButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
@@ -243,10 +223,7 @@ public class EditDishDialog extends Dialog {
                 dishService.get(dishToEdit.getId()).ifPresent(d -> dishToEdit = d);
                 Notification.show("Дочерние элементы обновлены");
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         measureButton.setVisible(!dishToEdit.getChildDishes().isEmpty());
@@ -331,12 +308,10 @@ public class EditDishDialog extends Dialog {
                 dishService.update(this.dishToEdit);
                 close();
             } catch (ObjectOptimisticLockingFailureException exception) {
-                Notification n = Notification.show(
-                        "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Невозможно обновить запись. " +
+                        "Кто-то другой обновил запись, пока вы вносили изменения");
             } catch (ValidationException validationException) {
-                Notification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
+                ErrorNotification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
             }
         });
 

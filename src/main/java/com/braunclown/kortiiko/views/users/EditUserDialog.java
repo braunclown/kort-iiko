@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.users;
 
+import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.Role;
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.services.UserService;
@@ -12,7 +13,6 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -28,21 +28,16 @@ public class EditUserDialog extends Dialog {
 
     private TextField usernameField;
     private TextField realNameField;
-    private Button editPasswordButton;
     private EmailField emailField;
     private TextField phoneField;
     private TextField chatIdField;
     private CheckboxGroup<Role> roles;
 
-    private Button closeButton;
-    private Button deleteUserButton;
-    private Button saveUserButton;
-
     private User userToEdit;
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private BeanValidationBinder<User> binder;
+    private final BeanValidationBinder<User> binder;
 
     public EditUserDialog(User user, UserService userService, PasswordEncoder passwordEncoder) {
         this.userToEdit = user;
@@ -93,7 +88,7 @@ public class EditUserDialog extends Dialog {
     }
 
     private Button createEditPasswordButton() {
-        editPasswordButton = new Button("Сменить пароль");
+        Button editPasswordButton = new Button("Сменить пароль");
         editPasswordButton.addClickListener(event -> {
             try {
                 PasswordChangeDialog dialog = new PasswordChangeDialog(userToEdit, userService, passwordEncoder);
@@ -101,10 +96,8 @@ public class EditUserDialog extends Dialog {
                 dialog.addConfirmListener(confirm ->
                         userService.get(userToEdit.getId()).ifPresent(user -> userToEdit = user));
             } catch (ObjectOptimisticLockingFailureException e) {
-                Notification n = Notification.show(
-                        "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Невозможно обновить запись. " +
+                        "Кто-то другой обновил запись, пока вы вносили изменения");
             }
         });
         return editPasswordButton;
@@ -121,7 +114,7 @@ public class EditUserDialog extends Dialog {
     }
 
     private Button createCloseButton() {
-        closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
+        Button closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         closeButton.addClickListener(event -> close());
         return closeButton;
@@ -143,7 +136,7 @@ public class EditUserDialog extends Dialog {
     }
 
     private Button createDeleteUserButton() {
-        deleteUserButton = new Button("Удалить", new Icon(VaadinIcon.TRASH));
+        Button deleteUserButton = new Button("Удалить", new Icon(VaadinIcon.TRASH));
         deleteUserButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         deleteUserButton.addClickListener(event -> {
             userService.delete(userToEdit.getId());
@@ -154,7 +147,7 @@ public class EditUserDialog extends Dialog {
 
 
     private Button createSaveUserButton() {
-        saveUserButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
+        Button saveUserButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
         saveUserButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveUserButton.addClickListener(event -> {
             try {
@@ -165,12 +158,10 @@ public class EditUserDialog extends Dialog {
                 userService.update(this.userToEdit);
                 close();
             } catch (ObjectOptimisticLockingFailureException exception) {
-                Notification n = Notification.show(
-                        "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Невозможно обновить запись. " +
+                        "Кто-то другой обновил запись, пока вы вносили изменения");
             } catch (ValidationException validationException) {
-                Notification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
+                ErrorNotification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
             }
         });
 

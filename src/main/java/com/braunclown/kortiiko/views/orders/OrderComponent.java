@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.orders;
 
+import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.CookOrder;
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.security.AuthenticatedUser;
@@ -28,7 +29,7 @@ import java.util.Optional;
 
 public class OrderComponent extends Div {
     private NumberField cookedAmountField;
-    private CookOrder order;
+    private final CookOrder order;
     private final CookOrderService cookOrderService;
     private final DishService dishService;
     private final AuthenticatedUser authenticatedUser;
@@ -98,15 +99,10 @@ public class OrderComponent extends Div {
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             } catch (ObjectOptimisticLockingFailureException e) {
-                Notification n = Notification.show(
-                        "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Невозможно обновить запись. " +
+                        "Кто-то другой обновил запись, пока вы вносили изменения");
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Произошла ошибка");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Произошла ошибка");
             }
         });
         confirm.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

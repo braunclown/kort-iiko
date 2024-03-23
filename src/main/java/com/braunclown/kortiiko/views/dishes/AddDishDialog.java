@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.dishes;
 
+import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.data.Mode;
 import com.braunclown.kortiiko.services.DishService;
@@ -13,7 +14,6 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -153,7 +153,7 @@ public class AddDishDialog extends Dialog {
                 dishService.update(dish);
                 close();
             } catch (ValidationException validationException) {
-                Notification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
+                ErrorNotification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
             }
         });
 

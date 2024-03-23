@@ -1,5 +1,6 @@
 package com.braunclown.kortiiko.views.dishsettings;
 
+import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.data.DishSetting;
 import com.braunclown.kortiiko.data.StablePeriod;
@@ -15,7 +16,6 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -37,20 +37,11 @@ public class DishSettingsDialog extends Dialog {
     private DishSetting dishSetting;
     private TextField dishField;
     private TextField periodField;
-    private Button minAmountChildrenButton;
-    private Button minAmountPeriodsButton;
-    private Button minAmountDoBothButton;
     private TextField minAmountField;
-    private Button maxAmountChildrenButton;
-    private Button maxAmountPeriodsButton;
-    private Button maxAmountDoBothButton;
     private TextField maxAmountField;
     private TextField multiplicityField;
     private TextField measureField;
     private String errorMessage;
-
-    private Button closeButton;
-    private Button saveButton;
 
     private BeanValidationBinder<DishSetting> binder;
 
@@ -94,7 +85,7 @@ public class DishSettingsDialog extends Dialog {
 
     private Component createMinAmountLayout() {
         minAmountField = new TextField("Минимальные запасы");
-        minAmountChildrenButton = new Button("Применить к детям");
+        Button minAmountChildrenButton = new Button("Применить к детям");
         minAmountChildrenButton.addClickListener(event -> {
             try {
                 errorMessage = "";
@@ -106,21 +97,16 @@ public class DishSettingsDialog extends Dialog {
                     Notification.show("Дочерние элементы обновлены");
                     openErrorDialog();
                 } else {
-                    Notification n = Notification.show("Число должно быть неотрицательным");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Число должно быть неотрицательным");
                 }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         minAmountChildrenButton.setTooltipText("Применить настройку к дочерним группам и блюдам для данного периода");
         minAmountChildrenButton.setVisible(!dishSetting.getDish().getChildDishes().isEmpty());
 
-        minAmountPeriodsButton = new Button("Применить ко всем периодам");
+        Button minAmountPeriodsButton = new Button("Применить ко всем периодам");
         minAmountPeriodsButton.addClickListener(event -> {
             try {
                 errorMessage = "";
@@ -132,21 +118,16 @@ public class DishSettingsDialog extends Dialog {
                     Notification.show("Настройки пополнения обновлены для всех периодов");
                     openErrorDialog();
                 } else {
-                    Notification n = Notification.show("Число должно быть неотрицательным");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Число должно быть неотрицательным");
                 }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         minAmountPeriodsButton.setTooltipText("Применить настройку данного блюда для всех 'стабильных' периодов с типом смены "
                 + dishSetting.getStablePeriod().getDayType().getName());
 
-        minAmountDoBothButton = new Button("Применить к детям во всех периодах");
+        Button minAmountDoBothButton = new Button("Применить к детям во всех периодах");
         minAmountDoBothButton.addClickListener(event -> {
             try {
                 errorMessage = "";
@@ -158,15 +139,10 @@ public class DishSettingsDialog extends Dialog {
                     Notification.show("Настройки пополнения дочерних блюд обновлены для всех периодов");
                     openErrorDialog();
                 } else {
-                    Notification n = Notification.show("Число должно быть неотрицательным");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Число должно быть неотрицательным");
                 }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         minAmountDoBothButton
@@ -184,7 +160,7 @@ public class DishSettingsDialog extends Dialog {
 
     private Component createMaxAmountLayout() {
         maxAmountField = new TextField("Максимальные запасы");
-        maxAmountChildrenButton = new Button("Применить к детям");
+        Button maxAmountChildrenButton = new Button("Применить к детям");
         maxAmountChildrenButton.addClickListener(event -> {
             try {
                 errorMessage = "";
@@ -196,20 +172,16 @@ public class DishSettingsDialog extends Dialog {
                     Notification.show("Дочерние элементы обновлены");
                     openErrorDialog();
                 } else {
-                    Notification n = Notification.show("Число должно быть неотрицательным");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Число должно быть неотрицательным");
                 }
             } catch (Exception e) {
-                Notification n = Notification.show("Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         maxAmountChildrenButton.setTooltipText("Применить настройку к дочерним группам и блюдам для данного периода");
         maxAmountChildrenButton.setVisible(!dishSetting.getDish().getChildDishes().isEmpty());
 
-        maxAmountPeriodsButton = new Button("Применить ко всем периодам");
+        Button maxAmountPeriodsButton = new Button("Применить ко всем периодам");
         maxAmountPeriodsButton.addClickListener(event -> {
             try {
                 errorMessage = "";
@@ -221,21 +193,16 @@ public class DishSettingsDialog extends Dialog {
                     Notification.show("Настройки пополнения обновлены для всех периодов");
                     openErrorDialog();
                 } else {
-                    Notification n = Notification.show("Число должно быть неотрицательным");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Число должно быть неотрицательным");
                 }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         maxAmountPeriodsButton.setTooltipText("Применить настройку данного блюда для всех 'стабильных' периодов с типом смены "
                 + dishSetting.getStablePeriod().getDayType().getName());
 
-        maxAmountDoBothButton = new Button("Применить к детям во всех периодах");
+        Button maxAmountDoBothButton = new Button("Применить к детям во всех периодах");
         maxAmountDoBothButton.addClickListener(event -> {
             try {
                 errorMessage = "";
@@ -247,15 +214,10 @@ public class DishSettingsDialog extends Dialog {
                     Notification.show("Настройки пополнения дочерних блюд обновлены для всех периодов");
                     openErrorDialog();
                 } else {
-                    Notification n = Notification.show("Число должно быть неотрицательным");
-                    n.setPosition(Notification.Position.MIDDLE);
-                    n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    ErrorNotification.show("Число должно быть неотрицательным");
                 }
             } catch (Exception e) {
-                Notification n = Notification.show(
-                        "Проверьте правильность введённых данных");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Проверьте правильность введённых данных");
             }
         });
         maxAmountDoBothButton
@@ -299,7 +261,7 @@ public class DishSettingsDialog extends Dialog {
     }
 
     private Button createCloseButton() {
-        closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
+        Button closeButton = new Button("Отмена", new Icon(VaadinIcon.CLOSE));
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         closeButton.addClickListener(event -> close());
         return closeButton;
@@ -307,7 +269,7 @@ public class DishSettingsDialog extends Dialog {
 
 
     private Button createSaveDishButton() {
-        saveButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
+        Button saveButton = new Button("Сохранить", new Icon(VaadinIcon.CHECK));
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClickListener(event -> {
             try {
@@ -321,12 +283,10 @@ public class DishSettingsDialog extends Dialog {
                     dialog.open();
                 }
             } catch (ObjectOptimisticLockingFailureException exception) {
-                Notification n = Notification.show(
-                        "Невозможно обновить запись. Кто-то другой обновил запись, пока вы вносили изменения");
-                n.setPosition(Notification.Position.MIDDLE);
-                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                ErrorNotification.show("Невозможно обновить запись. " +
+                        "Кто-то другой обновил запись, пока вы вносили изменения");
             } catch (ValidationException validationException) {
-                Notification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
+                ErrorNotification.show("Невозможно обновить запись. Проверьте правильность введённых данных");
             }
         });
         saveButton.setTooltipText("Применить настройки данного блюда для выбранного периода");

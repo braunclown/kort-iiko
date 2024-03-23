@@ -18,7 +18,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -100,9 +99,7 @@ public class PeriodsView extends Div {
                         salesReceiver.planRequests(todayPeriods);
                         Notification.show("Программа запущена. Количество периодов сегодня: " + todayPeriods.size());
                     } else {
-                        Notification n = Notification.show("Программа уже была запущена сегодня");
-                        n.setPosition(Notification.Position.MIDDLE);
-                        n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        ErrorNotification.show("Программа уже была запущена сегодня");
                     }
                 }
             } catch (Exception e) {
