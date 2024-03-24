@@ -125,10 +125,10 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
                     if (dayType.getValue() != null) {
                         for (StablePeriod period : stablePeriodService.findByDayType(dayType.getValue())) {
                             if (startTime != null && endTime.getValue() != null && !Objects.equals(stablePeriod, period)) {
-                                StablePeriod currerntPeriod = new StablePeriod();
-                                currerntPeriod.setStartTime(startTime);
-                                currerntPeriod.setEndTime(endTime.getValue());
-                                if (stablePeriodService.isOverlapping(period, currerntPeriod)) {
+                                StablePeriod currentPeriod = new StablePeriod();
+                                currentPeriod.setStartTime(startTime);
+                                currentPeriod.setEndTime(endTime.getValue());
+                                if (stablePeriodService.isOverlapping(period, currentPeriod)) {
                                     return ValidationResult.error("Данный период пересекается с другим");
                                 }
                             }

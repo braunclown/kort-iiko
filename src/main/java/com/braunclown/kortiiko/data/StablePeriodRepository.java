@@ -3,6 +3,7 @@ package com.braunclown.kortiiko.data;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface StablePeriodRepository extends JpaRepository<StablePeriod, Long>, JpaSpecificationExecutor<StablePeriod> {
@@ -10,4 +11,6 @@ public interface StablePeriodRepository extends JpaRepository<StablePeriod, Long
     List<StablePeriod> findByDayType(DayType dayType);
 
     long countByDayType(DayType dayType);
+
+    List<StablePeriod> findByDayTypeIn(Collection<DayType> dayTypes);
 }

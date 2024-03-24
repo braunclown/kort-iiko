@@ -2,7 +2,7 @@ package com.braunclown.kortiiko.views.orders;
 
 import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.CookOrder;
-import com.braunclown.kortiiko.data.Dish;
+import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.security.AuthenticatedUser;
 import com.braunclown.kortiiko.services.CookOrderService;
 import com.braunclown.kortiiko.services.DishService;
@@ -24,8 +24,6 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-
-import java.util.Optional;
 
 public class OrderComponent extends Div {
     private NumberField cookedAmountField;
@@ -86,15 +84,18 @@ public class OrderComponent extends Div {
                 Double amountCooked = cookedAmountField.getValue();
                 order.setAmountCooked(amountCooked);
                 order.setVisible(false);
-                authenticatedUser.get().ifPresent(user -> order.setCook(user));
+                authenticatedUser.get().ifPresent(order::setCook);
                 cookOrderService.update(order);
                 setVisible(false);
-                Optional<Dish> d = dishService.get(order.getDish().getId());
-                if (d.isPresent()) {
-                    Dish dish = d.get();
+                dishService.get(order.getDish().getId()).ifPresent(dish -> {
                     dish.setAmount(dish.getAmount() + amountCooked);
                     dishService.update(dish);
-                }
+                });
+                authenticatedUser.get().ifPresent(user -> {
+                    if (!order.getAmountOrdered().equals(order.getAmountCooked())) {
+                        bot.sendAdmins(createMessage(user));
+                    }
+                });
                 Notification n = Notification.show("Запись обновлена");
                 n.setPosition(Notification.Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -112,15 +113,20 @@ public class OrderComponent extends Div {
 
     private Button createUnableToCookButton() {
         Button unableToCook = new Button("Невозможно приготовить", new Icon(VaadinIcon.CLOSE));
-        unableToCook.addClickListener(event -> {
-            authenticatedUser.get().ifPresent(user -> {
-                UnableToCookDialog dialog = new UnableToCookDialog(bot, cookOrderService, user, order);
-                dialog.open();
-                dialog.addConfirmListener(confirm -> setVisible(false));
-            });
-        });
+        unableToCook.addClickListener(event -> authenticatedUser.get().ifPresent(user -> {
+            UnableToCookDialog dialog = new UnableToCookDialog(bot, cookOrderService, user, order);
+            dialog.open();
+            dialog.addConfirmListener(confirm -> setVisible(false));
+        }));
         unableToCook.addThemeVariants(ButtonVariant.LUMO_ERROR);
         unableToCook.addClassNames(LumoUtility.Width.FULL);
         return unableToCook;
+    }
+
+    private String createMessage(User currentUser) {
+        return "Блюдо " + order.getDish().getName() + ": повар " + currentUser.getRealName()
+                + " (" + currentUser.getPhone() + ", " + currentUser.getEmail()
+                + ") приготовил " + order.getAmountCooked() + " " + order.getDish().getMeasure()
+                + " вместо " + order.getAmountOrdered();
     }
 }

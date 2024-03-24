@@ -7,13 +7,13 @@ import com.braunclown.kortiiko.services.DishSettingService;
 import com.braunclown.kortiiko.services.iiko.DishImportService;
 import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -38,6 +38,7 @@ import java.util.Set;
 @Uses(Icon.class)
 @CssImport(value = "./themes/kort-iiko/dish-grid.css", themeFor = "vaadin-grid")
 public class DishesView extends Div {
+    private final String DISHSETTING_EDIT_ROUTE_TEMPLATE = "dish-settings-table/%s/edit";
 
     private TreeGrid<Dish> treeGrid;
     private Button importDishesButton;
@@ -131,9 +132,13 @@ public class DishesView extends Div {
         treeGrid.addColumn(Dish::getAmount).setHeader("Остатки").setSortable(true);
         treeGrid.addColumn(Dish::getMeasure).setHeader("Ед. измерения").setSortable(true);
         treeGrid.addColumn(Dish::getMultiplicity).setHeader("Кратность").setSortable(true);
-        treeGrid.addComponentColumn(dish ->
-                new Span(dish.getMode() == Mode.MAX ? "До макс." : "Продажи"))
-                .setHeader("Режим пополнения").setSortable(true);
+        treeGrid.addComponentColumn(dish -> {
+            Button button = new Button(dish.getMode() == Mode.MAX ? "До макс." : "Продажи", new Icon(VaadinIcon.EDIT));
+            button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+            button.addClickListener(event ->
+                    UI.getCurrent().navigate(String.format(DISHSETTING_EDIT_ROUTE_TEMPLATE, dish.getId())));
+            return button;
+        }).setHeader("Режим пополнения").setSortable(true);
         treeGrid.addComponentColumn(dish -> {
             Button button = new Button("Редактировать", event -> {
                 EditDishDialog editDishDialog =

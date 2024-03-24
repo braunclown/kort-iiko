@@ -217,7 +217,7 @@ public class DishSettingsView extends Div implements BeforeEnterObserver {
     }
 
 
-    public Set<Dish> getChildren(Dish dish) {
+    private Set<Dish> getChildren(Dish dish) {
         return dish.getChildDishes();
     }
 

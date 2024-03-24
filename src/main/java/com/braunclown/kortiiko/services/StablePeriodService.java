@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,9 @@ public class StablePeriodService {
         return repository.findByDayType(dayType);
     }
 
+    public List<StablePeriod> findByDayTypeIn(Collection<DayType> dayTypes) {
+        return repository.findByDayTypeIn(dayTypes);
+    }
 
     public Page<StablePeriod> list(Pageable pageable) {
         return repository.findAll(pageable);
