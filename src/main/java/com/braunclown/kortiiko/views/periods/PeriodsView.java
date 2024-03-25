@@ -13,11 +13,13 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrderBuilder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -65,19 +67,28 @@ public class PeriodsView extends Div {
     private Component createMenu() {
         HorizontalLayout layout = new HorizontalLayout();
         layout.addClassNames(LumoUtility.Padding.MEDIUM);
-        Button updateDishAmount = new Button("Обновить остатки блюд", new Icon(VaadinIcon.REFRESH));
-        updateDishAmount.setTooltipText("Текущие остатки каждого блюда станут равными соответствующим остаткам по умолчанию");
-        updateDishAmount.addClickListener(event -> dishService.updateAmounts());
-        updateDishAmount.addClassNames(LumoUtility.Margin.Top.AUTO);
 
         dayTypeSelect = new Select<>();
         dayTypeSelect.setLabel("Выберите тип смены");
         dayTypeSelect.setItemLabelGenerator(DayType::getName);
         dayTypeSelect.setItems(dayTypeService.findAll());
 
-        layout.add(updateDishAmount, dayTypeSelect, createPeriodsButton(), createStopTasksButton());
+        layout.add(createUpdateAmountButton(), dayTypeSelect, createPeriodsButton(), createStopTasksButton());
         changeButtonsVisibility();
         return layout;
+    }
+
+    private Button createUpdateAmountButton() {
+        Button updateDishAmount = new Button("Обновить остатки блюд", new Icon(VaadinIcon.REFRESH));
+        updateDishAmount.setTooltipText("Текущие остатки каждого блюда станут равными соответствующим остаткам по умолчанию");
+        updateDishAmount.addClickListener(event -> {
+            dishService.updateAmounts();
+            Notification n = Notification.show("Остатки обновлены");
+            n.setPosition(Notification.Position.MIDDLE);
+            n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        });
+        updateDishAmount.addClassNames(LumoUtility.Margin.Top.AUTO);
+        return updateDishAmount;
     }
 
     private Button createPeriodsButton() {
@@ -140,7 +151,7 @@ public class PeriodsView extends Div {
 
     private Component createGrid() {
         grid = new Grid<>(Period.class, false);
-        grid.addColumn("startTime")
+        Grid.Column<Period> startTimeColumn = grid.addColumn("startTime")
                 .setHeader("Время начала").setAutoWidth(true);
         grid.addColumn("endTime")
                 .setHeader("Время конца").setAutoWidth(true);
@@ -148,7 +159,7 @@ public class PeriodsView extends Div {
         grid.setItems(periodService.findTodayPeriods());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
-
+        grid.sort(new GridSortOrderBuilder<Period>().thenAsc(startTimeColumn).build());
         return grid;
     }
 

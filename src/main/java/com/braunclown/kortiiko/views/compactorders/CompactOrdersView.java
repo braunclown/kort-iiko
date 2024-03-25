@@ -75,10 +75,10 @@ public class CompactOrdersView extends Div {
             grid = new Grid<>(CookOrder.class, false);
             grid.addColumn(order -> order.getDish().getName()).setAutoWidth(true)
                     .setSortable(true).setHeader("Блюдо").setResizable(true);
-            grid.addColumn(order -> order.getDish().getMeasure()).setAutoWidth(true)
-                    .setSortable(true).setHeader("Ед. измерения");
             grid.addColumn(CookOrder::getAmountOrdered).setAutoWidth(true)
                     .setSortable(true).setHeader("Требуемое кол-во");
+            grid.addColumn(order -> order.getDish().getMeasure()).setAutoWidth(true)
+                    .setSortable(true).setHeader("Ед. измерения");
             grid.addComponentColumn(this::createCookButton).setHeader("Подтвердить приготовление");
             grid.addComponentColumn(this::createUnableToCookButton).setHeader("Невозможно приготовить");
             grid.setItems(getCurrentOrders());
@@ -114,7 +114,7 @@ public class CompactOrdersView extends Div {
                 authenticatedUser.get().ifPresent(user -> {
                     UnableToCookDialog dialog = new UnableToCookDialog(bot, cookOrderService, user, cookOrder);
                     dialog.open();
-                    dialog.addConfirmListener(confirm -> UI.getCurrent().getPage().reload());
+                    dialog.addConfirmListener(confirm -> grid.setItems(getCurrentOrders()));
                 }));
         return unableToCookButton;
     }

@@ -3,7 +3,6 @@ package com.braunclown.kortiiko.views.amount;
 import com.braunclown.kortiiko.data.Dish;
 import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.views.MainLayout;
-import com.braunclown.kortiiko.views.stableperiods.EditAmountDialog;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;

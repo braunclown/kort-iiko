@@ -83,7 +83,7 @@ public class ConfirmCookingDialog extends Dialog {
 
     private Component createDotButton() {
         Button dotButton = new Button(".");
-        dotButton.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Height.XLARGE);
+        dotButton.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Height.XLARGE, LumoUtility.Flex.GROW);
         dotButton.addClickListener(event -> {
             if (!amountField.getValue().contains(".")) {
                 amountField.setValue(amountField.getValue() + ".");
@@ -95,7 +95,7 @@ public class ConfirmCookingDialog extends Dialog {
     private Component createBackspaceButton() {
         Button backspace = new Button("←");
         backspace.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        backspace.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Height.XLARGE);
+        backspace.addClassNames(LumoUtility.FontSize.XLARGE, LumoUtility.Height.XLARGE, LumoUtility.Flex.GROW);
         backspace.addClickListener(event -> {
             if (!amountField.getValue().isEmpty()) {
                 amountField.setValue(amountField.getValue().substring(0, amountField.getValue().length() - 1));

@@ -1,4 +1,4 @@
-package com.braunclown.kortiiko.views.stableperiods;
+package com.braunclown.kortiiko.views.amount;
 
 import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.Dish;
