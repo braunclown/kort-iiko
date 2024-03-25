@@ -2,6 +2,7 @@ package com.braunclown.kortiiko.views;
 
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.security.AuthenticatedUser;
+import com.braunclown.kortiiko.views.amount.AmountView;
 import com.braunclown.kortiiko.views.compactorders.CompactOrdersView;
 import com.braunclown.kortiiko.views.daytype.DayTypeView;
 import com.braunclown.kortiiko.views.dishes.DishesView;
@@ -80,6 +81,9 @@ public class MainLayout extends AppLayout {
         }
         if (accessChecker.hasAccess(CompactOrdersView.class)) {
             nav.addItem(new SideNavItem("Таблица заказов", CompactOrdersView.class, LineAwesomeIcon.TABLE_SOLID.create()));
+        }
+        if (accessChecker.hasAccess(AmountView.class)) {
+            nav.addItem(new SideNavItem("Остатки блюд", AmountView.class, LineAwesomeIcon.BOX_SOLID.create()));
         }
         if (accessChecker.hasAccess(DishesView.class)) {
             nav.addItem(new SideNavItem("Блюда", DishesView.class, LineAwesomeIcon.PIZZA_SLICE_SOLID.create()));

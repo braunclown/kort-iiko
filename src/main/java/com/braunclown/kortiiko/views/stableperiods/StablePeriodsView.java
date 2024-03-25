@@ -12,6 +12,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrderBuilder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
@@ -80,10 +81,11 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Настройка таблицы
-        periodGrid.addColumn(sp -> sp.getDayType().getName())
+        Grid.Column<StablePeriod> dayTypeColumn = periodGrid.addColumn(sp -> sp.getDayType().getName())
                 .setAutoWidth(true).setSortable(true).setHeader("Тип смены");
-        periodGrid.addColumn("startTime").setAutoWidth(true).setSortable(true).setHeader("Время начала");
-        periodGrid.addColumn("endTime").setAutoWidth(true).setSortable(true).setHeader("Время конца");
+        Grid.Column<StablePeriod> startTimeColumn = periodGrid.addColumn(StablePeriod::getStartTime)
+                .setAutoWidth(true).setSortable(true).setHeader("Время начала");
+        periodGrid.addColumn(StablePeriod::getEndTime).setAutoWidth(true).setSortable(true).setHeader("Время конца");
         periodGrid.addComponentColumn(stablePeriod -> {
             Button button = new Button("К настройкам пополнения", new Icon(VaadinIcon.EDIT));
             button.addClickListener(event ->
@@ -93,7 +95,8 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
         });
         periodGrid.setItems(stablePeriodService.findAll());
         periodGrid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
-
+        periodGrid.sort(new GridSortOrderBuilder<StablePeriod>()
+                .thenAsc(dayTypeColumn).thenAsc(startTimeColumn).build());
         periodGrid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // Заполнение полей редактирования при выборе периода в таблице
@@ -135,8 +138,7 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
                         }
                     }
                     return ValidationResult.ok();
-                }
-        ).bind("startTime");
+                }).bind("startTime");
         binder.forField(endTime).withValidator(
                 endTime -> startTime.getValue() != null && endTime != null && endTime.isAfter(startTime.getValue()),
                 "Конец периода должен быть позже его начала"
@@ -155,9 +157,7 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
                         }
                     }
                     return ValidationResult.ok();
-                }
-                )
-                .bind("endTime");
+                }).bind("endTime");
         binder.addValueChangeListener(event -> binder.validate());
 
         cancel.addClickListener(e -> {

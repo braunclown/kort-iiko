@@ -14,6 +14,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrderBuilder;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
@@ -139,12 +140,11 @@ public class DishSettingsTableView extends Div implements BeforeEnterObserver {
         return navigateLayout;
     }
 
-    // TODO: Форма быстрого редактирования остатков
     private Component createGrid() {
         grid = new Grid<>(StablePeriod.class, false);
-        grid.addColumn(stablePeriod -> stablePeriod.getDayType().getName()).setAutoWidth(true)
+        Grid.Column<StablePeriod> dayTypeColumn = grid.addColumn(stablePeriod -> stablePeriod.getDayType().getName()).setAutoWidth(true)
                 .setHeader("Тип смены").setSortable(true);
-        grid.addColumn(StablePeriod::getStartTime).setAutoWidth(true)
+        Grid.Column<StablePeriod> startTimeColumn = grid.addColumn(StablePeriod::getStartTime).setAutoWidth(true)
                 .setHeader("Время начала").setSortable(true);
         grid.addColumn(StablePeriod::getEndTime).setAutoWidth(true)
                 .setHeader("Время конца").setSortable(true);
@@ -173,6 +173,8 @@ public class DishSettingsTableView extends Div implements BeforeEnterObserver {
             }
             return getDialogButton(dishSetting);
         }).setHeader("Настроить");
+        grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
+        grid.sort(new GridSortOrderBuilder<StablePeriod>().thenAsc(dayTypeColumn).thenAsc(startTimeColumn).build());
         refreshGrid();
         return grid;
     }
