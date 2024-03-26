@@ -45,32 +45,37 @@ public class IikoConnectionService {
 
     public String requestSales(String token, LocalDateTime startTime, LocalDateTime endTime)
             throws URISyntaxException, IOException, InterruptedException {
-        HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString("{\n" +
-                "\t\"reportType\": \"SALES\",\n" +
-                "\t\"buildSummary\": \"false\",\n" +
-                "\t\"groupByRowFields\": [\n" +
-                "\t\t\"DishId\",\n" +
-                "\t\t\"DishName\",\n" +
-                "\t\t\"CloseTime\"\n" +
-                "\t],\n" +
-                "\t\"aggregateFields\": [\n" +
-                "\t\t\"DishAmountInt\"\n" +
-                "\t\t]," +
-                "\t\"filters\": {\n" +
-                "\t\t\"CloseTime\": {\n" +
-                "\t\t\t\"filterType\": \"DateRange\",\n" +
-                "\t\t\t\"periodType\": \"CUSTOM\",\n" +
-                "\t\t\t\"from\": \"" + startTime + ":00.000\",\n" +
-                "\t\t\t\"to\": \"" + endTime + ":00.000\"\n" +
-                "\t\t},\n" +
-                "\t\t\"OpenDate.Typed\": {\n" +
-                "\t\t\t\"filterType\": \"DateRange\",\n" +
-                "\t\t\t\"periodType\": \"CUSTOM\",\n" +
-                "\t\t\t\"from\": \"2024-01-01T00:00:00.000\",\n" +
-                "\t\t\t\"to\": \"2048-02-20T00:00:00.000\"\n" +
-                "\t\t}\n" +
-                "\t}\n" +
-                "}");
+        HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString("""
+                {
+                	"reportType": "SALES",
+                	"buildSummary": "false",
+                	"groupByRowFields": [
+                		"DishId",
+                		"DishName",
+                		"CloseTime"
+                	],
+                	"aggregateFields": [
+                		"DishAmountInt"
+                		],
+                	"filters": {
+                		"CloseTime": {
+                			"filterType": "DateRange",
+                			"periodType": "CUSTOM",
+                			"from": "%s:00.000",
+                			"to": "%s:00.000"
+                		},
+                		"DeletedWithWriteoff": {
+                            "filterType": "IncludeValues",
+                            "values": ["NOT_DELETED"]
+                        },
+                		"OpenDate.Typed": {
+                			"filterType": "DateRange",
+                			"periodType": "CUSTOM",
+                			"from": "2024-01-01T00:00:00.000",
+                			"to": "2048-02-20T00:00:00.000"
+                		}
+                	}
+                }""".formatted(startTime, endTime));
         return HttpRequestsService.sendPostRequest(iikoAddress + "/api/v2/reports/olap?key=" + token, body)
                 .body();
     }
