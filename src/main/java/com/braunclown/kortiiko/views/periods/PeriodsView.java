@@ -11,6 +11,7 @@ import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrderBuilder;
@@ -79,13 +80,19 @@ public class PeriodsView extends Div {
     }
 
     private Button createUpdateAmountButton() {
-        Button updateDishAmount = new Button("Обновить остатки блюд", new Icon(VaadinIcon.REFRESH));
+        Button updateDishAmount = new Button("Обновить остатки блюд", VaadinIcon.MAGIC.create());
         updateDishAmount.setTooltipText("Текущие остатки каждого блюда станут равными соответствующим остаткам по умолчанию");
         updateDishAmount.addClickListener(event -> {
-            dishService.updateAmounts();
-            Notification n = Notification.show("Остатки обновлены");
-            n.setPosition(Notification.Position.MIDDLE);
-            n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            ConfirmDialog dialog = new ConfirmDialog("Вы уверены?",
+                    "Текущие остатки каждого блюда станут равными соответствующим остаткам по умолчанию. Действие невозможно будет отменить",
+                    "Да", e -> {
+                dishService.updateAmounts();
+                Notification n = Notification.show("Остатки обновлены");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            },
+                    "Отмена", e -> {});
+            dialog.open();
         });
         updateDishAmount.addClassNames(LumoUtility.Margin.Top.AUTO);
         return updateDishAmount;

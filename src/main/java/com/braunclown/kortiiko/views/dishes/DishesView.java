@@ -41,10 +41,7 @@ public class DishesView extends Div {
     private final String DISHSETTING_EDIT_ROUTE_TEMPLATE = "dish-settings-table/%s/edit";
 
     private TreeGrid<Dish> treeGrid;
-    private Button importDishesButton;
-    private Button refreshTreeGridButton;
     private TextField nameFilterField;
-    private Button nameFilterButton;
     private final DishService dishService;
     private final DishSettingService dishSettingService;
     private final DishImportService dishImportService;
@@ -82,7 +79,7 @@ public class DishesView extends Div {
         nameFilterField.setValueChangeMode(ValueChangeMode.EAGER);
         nameFilterField.setPlaceholder("Название блюда или группы");
 
-        nameFilterButton = new Button("Искать", new Icon(VaadinIcon.SEARCH));
+        Button nameFilterButton = new Button("Искать", new Icon(VaadinIcon.SEARCH));
         nameFilterButton.addClassName(LumoUtility.Margin.Top.AUTO);
         nameFilterButton.addClickListener(event -> filterTreeGrid());
         HorizontalLayout nameFilterLayout = new HorizontalLayout(nameFilterField, nameFilterButton);
@@ -103,7 +100,7 @@ public class DishesView extends Div {
 
 
     private Component createImportDishesButton() {
-        importDishesButton = new Button("Импортировать блюда из iiko", new Icon(VaadinIcon.DOWNLOAD));
+        Button importDishesButton = new Button("Импортировать блюда из iiko", new Icon(VaadinIcon.DOWNLOAD));
         importDishesButton.addClickListener(event -> {
             ImportDishesDialog dialog = new ImportDishesDialog(dishImportService);
             dialog.open();
@@ -117,7 +114,7 @@ public class DishesView extends Div {
     }
 
     private Component createRefreshTreeGridButton() {
-        refreshTreeGridButton = new Button("Обновить", new Icon(VaadinIcon.REFRESH));
+        Button refreshTreeGridButton = new Button("Обновить", new Icon(VaadinIcon.REFRESH));
         refreshTreeGridButton.addClickListener(event -> reloadTreeGrid());
         return refreshTreeGridButton;
     }
@@ -140,16 +137,7 @@ public class DishesView extends Div {
             return button;
         }).setHeader("Режим пополнения").setSortable(true);
         treeGrid.addComponentColumn(dish -> {
-            Button button = new Button("Редактировать", event -> {
-                EditDishDialog editDishDialog =
-                        new EditDishDialog(dish, dishService, dishSettingService, dishImportService);
-                editDishDialog.open();
-                editDishDialog.addOpenedChangeListener(e -> {
-                    if (!e.isOpened()) {
-                        reloadTreeGrid();
-                    }
-                });
-            });
+            Button button = new Button("Редактировать", event -> openEditDishDialog(dish));
             button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             button.setIcon(new Icon(VaadinIcon.EDIT));
             return button;
@@ -160,6 +148,7 @@ public class DishesView extends Div {
         treeGrid.addThemeVariants(GridVariant.LUMO_COMPACT);
         treeGrid.expandRecursively(roots, 99);
         treeGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        treeGrid.addItemDoubleClickListener(event -> openEditDishDialog(event.getItem()));
         return treeGrid;
     }
 
@@ -175,6 +164,17 @@ public class DishesView extends Div {
         });
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         return button;
+    }
+
+    private void openEditDishDialog(Dish dish) {
+        EditDishDialog editDishDialog =
+                new EditDishDialog(dish, dishService, dishSettingService, dishImportService);
+        editDishDialog.open();
+        editDishDialog.addOpenedChangeListener(e -> {
+            if (!e.isOpened()) {
+                reloadTreeGrid();
+            }
+        });
     }
 
     private void filterTreeGrid() {

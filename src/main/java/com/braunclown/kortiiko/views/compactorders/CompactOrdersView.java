@@ -83,6 +83,7 @@ public class CompactOrdersView extends Div {
             grid.addComponentColumn(this::createUnableToCookButton).setHeader("Невозможно приготовить");
             grid.setItems(getCurrentOrders());
             grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_WRAP_CELL_CONTENT);
+            grid.addItemDoubleClickListener(event -> openConfirmCookingDialog(event.getItem()));
             orderLayout.add(grid);
         } else {
             caption.setText("Следующий период не найден. Заказов нет");
@@ -93,18 +94,20 @@ public class CompactOrdersView extends Div {
     private Component createCookButton(CookOrder cookOrder) {
         Button cookButton = new Button("Готово", new Icon(VaadinIcon.CHECK));
         cookButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_TERTIARY_INLINE);
-        cookButton.addClickListener(event -> {
-            authenticatedUser.get().ifPresent(user -> {
-                ConfirmCookingDialog dialog = new ConfirmCookingDialog(bot, cookOrderService, dishService, user, cookOrder);
-                dialog.open();
-                dialog.addOpenedChangeListener(e -> {
-                    if (!e.isOpened()) {
-                        grid.setItems(getCurrentOrders());
-                    }
-                });
+        cookButton.addClickListener(event -> openConfirmCookingDialog(cookOrder));
+        return cookButton;
+    }
+
+    private void openConfirmCookingDialog(CookOrder cookOrder) {
+        authenticatedUser.get().ifPresent(user -> {
+            ConfirmCookingDialog dialog = new ConfirmCookingDialog(bot, cookOrderService, dishService, user, cookOrder);
+            dialog.open();
+            dialog.addOpenedChangeListener(e -> {
+                if (!e.isOpened()) {
+                    grid.setItems(getCurrentOrders());
+                }
             });
         });
-        return cookButton;
     }
 
     private Component createUnableToCookButton(CookOrder cookOrder) {

@@ -194,15 +194,7 @@ public class UsersView extends Div {
         }).setAutoWidth(true).setHeader("Роли");
         grid.addComponentColumn(user -> {
             Button editButton = new Button("Редактировать", new Icon(VaadinIcon.EDIT));
-            editButton.addClickListener(event -> {
-                EditUserDialog dialog = new EditUserDialog(user, userService, passwordEncoder);
-                dialog.open();
-                dialog.addOpenedChangeListener(e -> {
-                    if (!e.isOpened()) {
-                        refreshGrid();
-                    }
-                });
-            });
+            editButton.addClickListener(event -> openEditUserDialog(user));
             editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
             return editButton;
         }).setHeader(createAddUserButton());
@@ -212,8 +204,19 @@ public class UsersView extends Div {
                 filters).stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
+        grid.addItemDoubleClickListener(event -> openEditUserDialog(event.getItem()));
 
         return grid;
+    }
+
+    private void openEditUserDialog(User user) {
+        EditUserDialog dialog = new EditUserDialog(user, userService, passwordEncoder);
+        dialog.open();
+        dialog.addOpenedChangeListener(e -> {
+            if (!e.isOpened()) {
+                refreshGrid();
+            }
+        });
     }
 
     private Component createAddUserButton() {

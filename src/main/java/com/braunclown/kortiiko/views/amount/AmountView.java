@@ -6,11 +6,15 @@ import com.braunclown.kortiiko.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrderBuilder;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -50,23 +54,46 @@ public class AmountView extends Div {
         refreshGrid();
         grid.sort(new GridSortOrderBuilder<Dish>().thenAsc(nameColumn).build());
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-        layout.add(refreshGrid, grid);
+        grid.addItemDoubleClickListener(event -> openEditAmountDialog(event.getItem()));
+        layout.add(new HorizontalLayout(refreshGrid, createUpdateAmountButton()), grid);
         return layout;
+    }
+
+    private Button createUpdateAmountButton() {
+        Button updateDishAmount = new Button("Применить настройки по умолчанию", VaadinIcon.MAGIC.create());
+        updateDishAmount.setTooltipText("Текущие остатки каждого блюда станут равными соответствующим остаткам по умолчанию");
+        updateDishAmount.addClickListener(event -> {
+            ConfirmDialog dialog = new ConfirmDialog("Вы уверены?",
+                    "Текущие остатки каждого блюда станут равными соответствующим остаткам по умолчанию. Действие невозможно будет отменить",
+                    "Да", e -> {
+                dishService.updateAmounts();
+                Notification n = Notification.show("Остатки обновлены");
+                n.setPosition(Notification.Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                refreshGrid();
+            },
+                    "Отмена", e -> {});
+            dialog.open();
+        });
+        updateDishAmount.addClassNames(LumoUtility.Margin.Top.AUTO);
+        return updateDishAmount;
     }
 
     private Component createEditButton(Dish dish) {
         Button editButton = new Button("Редактировать", VaadinIcon.EDIT.create());
         editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        editButton.addClickListener(event -> {
-            EditAmountDialog dialog = new EditAmountDialog(dishService, dish);
-            dialog.open();
-            dialog.addOpenedChangeListener(e -> {
-                if (!e.isOpened()) {
-                    refreshGrid();
-                }
-            });
-        });
+        editButton.addClickListener(event -> openEditAmountDialog(dish));
         return editButton;
+    }
+
+    private void openEditAmountDialog(Dish dish) {
+        EditAmountDialog dialog = new EditAmountDialog(dishService, dish);
+        dialog.open();
+        dialog.addOpenedChangeListener(e -> {
+            if (!e.isOpened()) {
+                refreshGrid();
+            }
+        });
     }
 
     private void refreshGrid() {

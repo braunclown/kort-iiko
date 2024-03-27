@@ -108,6 +108,8 @@ public class StablePeriodsView extends Div implements BeforeEnterObserver {
                 UI.getCurrent().navigate(StablePeriodsView.class);
             }
         });
+        periodGrid.addItemDoubleClickListener(event -> UI.getCurrent()
+                .navigate(String.format(DISHSETTING_EDIT_ROUTE_TEMPLATE, event.getItem().getId())));
 
         // Конфигурация формы
         binder = new BeanValidationBinder<>(StablePeriod.class);

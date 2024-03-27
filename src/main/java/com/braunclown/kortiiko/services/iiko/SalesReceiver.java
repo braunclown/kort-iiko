@@ -4,11 +4,12 @@ import com.braunclown.kortiiko.data.Period;
 import com.braunclown.kortiiko.data.Sale;
 import com.braunclown.kortiiko.services.CookOrderService;
 import com.braunclown.kortiiko.services.PeriodService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class SalesReceiver {
     private final CookOrderService cookOrderService;
     private final String timezone;
     private final static List<ScheduledFuture<?>> tasks = new ArrayList<>();
+    private final Logger logger = LoggerFactory.getLogger(SalesReceiver.class);
 
     public SalesReceiver(PeriodService periodService,
                          SalesImportService salesImportService,
@@ -64,7 +66,7 @@ public class SalesReceiver {
             List<Sale> sales = salesImportService.importSales(period);
             Optional<Period> nextPeriod = periodService.getNext(period);
             nextPeriod.ifPresent(value -> cookOrderService.calculateOrders(value, sales));
-            System.out.println(OffsetDateTime.now() + " Orders have been calculated");
+            logger.info("Orders have been calculated");
         }
 
     }
