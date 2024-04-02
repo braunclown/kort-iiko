@@ -1,45 +1,65 @@
-# Kort iiko
+# Kört-iiko
 
-This project can be used as a starting point to create your own Vaadin application with Spring Boot.
-It contains all the necessary configuration and some placeholder files to get you started.
+Kört-iiko &ndash; это интегрированное с iiko веб-приложение для организаций общественного питания, 
+которое формирует заказы на приготовление требуемого количества блюд.
 
-## Running the application
+## Запуск приложения в режиме разработчика
 
-The project is a standard Maven project. To run it from the command line,
-type `mvnw` (Windows), or `./mvnw` (Mac & Linux), then open
-http://localhost:8080 in your browser.
+Приложение представляет собой обычный Maven-проект. Чтобы запустить его, 
+задайте настройки в файле [application.properties](src/main/resources/application.properties) 
+(см. пункт 4 в разделе "Развёртывание")
+и, находясь в папке проекта, введите в командной строке `mvnw` (Windows cmd) или `./mvnw` (Mac, Linux, Windows PowerShell), 
+а затем откройте http://localhost:8080 в браузере.
 
-You can also import the project to your IDE of choice as you would with any
-Maven project. Read more on [how to import Vaadin projects to different IDEs](https://vaadin.com/docs/latest/guide/step-by-step/importing) (Eclipse, IntelliJ IDEA, NetBeans, and VS Code).
+Как и любой Maven-проект, Kört-iiko можно открыть в популярных IDE. 
+Подробнее по ссылке: [Как импортировать Vaadin-приложения в различные IDE](https://vaadin.com/docs/latest/guide/step-by-step/importing) (Eclipse, IntelliJ IDEA, NetBeans и VS Code).
 
-## Deploying to Production
+## Сборка
 
-To create a production build, call `mvnw clean package -Pproduction` (Windows),
-or `./mvnw clean package -Pproduction` (Mac & Linux).
-This will build a JAR file with all the dependencies and front-end resources,
-ready to be deployed. The file can be found in the `target` folder after the build completes.
+Чтобы создать продакшн-сборку, введите в командной строке `mvnw clean package -Pproduction` (Windows cmd)
+или `./mvnw clean package -Pproduction` (Mac, Linux, Windows PowerShell).
+Так в папке `target` вы получите готовый к развёртыванию JAR-файл.
 
-Once the JAR file is built, you can run it using
-`java -jar target/kort-iiko-1.0-SNAPSHOT.jar`
+## Развёртывание
+### 1. Создайте Telegram-бота
+1.1. Начните диалог с Telegram-ботом BotFather;\
+1.2. Введите команду `/newbot`, укажите название бота и его имя пользователя;\
+1.3. Введите команду `/setcommands` и отправьте следующий список команд вашего бота:
+```text
+start - Начать чат
+auth - Авторизоваться как админ
+```
 
-## Project structure
+### 2. Создайте БД
+2.1. Создайте в PostgreSQL пустую БД;\
+2.2. Предоставьте права доступа к БД пользователю, от имени которого к ней будет подключаться приложение;\
+2.3. Обеспечьте возможность подключения к БД по имени пользователя и паролю.
 
-- `MainLayout.java` in `src/main/java` contains the navigation setup (i.e., the
-  side/top bar and the main menu). This setup uses
-  [App Layout](https://vaadin.com/docs/components/app-layout).
-- `views` package in `src/main/java` contains the server-side Java views of your application.
-- `views` folder in `frontend/` contains the client-side JavaScript views of your application.
-- `themes` folder in `frontend/` contains the custom CSS styles.
+### 3. Подготовьте сервер
+3.1. Установите на сервере JDK 21 (или более позднюю версию);\
+3.2. Загрузите на сервер JAR-файл приложения;\
+3.3. Чтобы обеспечить шифрование данных, загрузите на сервер сертификаты в виде PKCS#12-файла.
 
-## Useful links
+### 4. Создайте конфигурационный файл
+4.1. В папке, где находится JAR-файл, создайте папку `config` 
+и положите в неё файл [application.properties](src/main/resources/application.properties);\
+4.2. Настройте ваше приложение, указав в файле `application.properties` значения следующих параметров:
 
-- Read the documentation at [vaadin.com/docs](https://vaadin.com/docs).
-- Follow the tutorial at [vaadin.com/docs/latest/tutorial/overview](https://vaadin.com/docs/latest/tutorial/overview).
-- Create new projects at [start.vaadin.com](https://start.vaadin.com/).
-- Search UI components and their usage examples at [vaadin.com/docs/latest/components](https://vaadin.com/docs/latest/components).
-- View use case applications that demonstrate Vaadin capabilities at [vaadin.com/examples-and-demos](https://vaadin.com/examples-and-demos).
-- Build any UI without custom CSS by discovering Vaadin's set of [CSS utility classes](https://vaadin.com/docs/styling/lumo/utility-classes). 
-- Find a collection of solutions to common use cases at [cookbook.vaadin.com](https://cookbook.vaadin.com/).
-- Find add-ons at [vaadin.com/directory](https://vaadin.com/directory).
-- Ask questions on [Stack Overflow](https://stackoverflow.com/questions/tagged/vaadin) or join our [Discord channel](https://discord.gg/MYFq5RTbBn).
-- Report issues, create pull requests in [GitHub](https://github.com/vaadin).
+| Параметр                      | Значение                                                                                        |
+|-------------------------------|-------------------------------------------------------------------------------------------------|
+| spring.datasource.url         | Строка подключения к БД                                                                         |
+| spring.datasource.username    | Имя пользователя для подключения к БД                                                           |
+| spring.datasource.password    | Пароль для подключения к БД                                                                     |
+| iiko.server-address           | Адрес вашего сервера iiko                                                                       |
+| iiko.username                 | Имя пользователя iiko                                                                           |
+| iiko.password                 | Пароль пользователя iiko                                                                        |
+| telegram.bot-name             | Имя пользователя вашего Telegram-бота                                                           |
+| telegram.bot-token            | Токен доступа к боту (должен быть получен на шаге 1.2)                                          |
+| server.ssl.key-store          | Путь к PKCS#12-файлу, например, `/home/user/cert.p12`                                           |
+| server.ssl.key-store-password | Пароль для PKCS#12-файла                                                                        |
+| server.ssl.key-alias          | Алиас для PKCS#12-файла                                                                         |
+| settings.timezone             | Часовой пояс сервера (список поясов см. в [спецификации IANA](https://www.iana.org/time-zones)) |
+
+
+### 5. Запустите приложение
+Запустите JAR-файл, например, `java -jar kort-iiko-1.0-SNAPSHOT.jar`
