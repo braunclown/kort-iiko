@@ -1,6 +1,6 @@
-insert into application_user (version, id, username, real_name, hashed_password, email, phone, is_active) values (1, '1','user','Пользователь','$2a$10$xdbKoM48VySZqVSU/cSlVeJn0Z04XCZ7KZBjUBC00eKo5uLswyOpe', 'user@mail.il', '+73124657890', true)
+insert into application_user (version, id, username, real_name, hashed_password, email, phone) values (1, '1','user','Пользователь','$2a$10$xdbKoM48VySZqVSU/cSlVeJn0Z04XCZ7KZBjUBC00eKo5uLswyOpe', 'user@mail.il', '+73124657890')
 insert into user_roles (user_id, roles) values ('1', 'USER')
-insert into application_user (version, id, username, real_name, hashed_password, email, phone, is_active) values (1, '2','admin','Админ','$2a$10$jpLNVNeA7Ar/ZQ2DKbKCm.MuT2ESe.Qop96jipKMq7RaUgCoQedV.', 'admin@mail.il', '+73124657891', true)
+insert into application_user (version, id, username, real_name, hashed_password, email, phone) values (1, '2','admin','Админ','$2a$10$jpLNVNeA7Ar/ZQ2DKbKCm.MuT2ESe.Qop96jipKMq7RaUgCoQedV.', 'admin@mail.il', '+73124657891')
 insert into user_roles (user_id, roles) values ('2', 'USER')
 insert into user_roles (user_id, roles) values ('2', 'ADMIN')
 insert into day_type (version, id, name) values (1, 1, 'Будни')

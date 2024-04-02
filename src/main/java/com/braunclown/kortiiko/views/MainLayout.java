@@ -7,7 +7,6 @@ import com.braunclown.kortiiko.views.compactorders.CompactOrdersView;
 import com.braunclown.kortiiko.views.daytype.DayTypeView;
 import com.braunclown.kortiiko.views.dishes.DishesView;
 import com.braunclown.kortiiko.views.main.MainView;
-import com.braunclown.kortiiko.views.orders.OrdersView;
 import com.braunclown.kortiiko.views.periods.PeriodsView;
 import com.braunclown.kortiiko.views.stableperiods.StablePeriodsView;
 import com.braunclown.kortiiko.views.subscription.SubscriptionView;
@@ -76,11 +75,8 @@ public class MainLayout extends AppLayout {
         if (accessChecker.hasAccess(MainView.class)) {
             nav.addItem(new SideNavItem("Главная", MainView.class, LineAwesomeIcon.HOME_SOLID.create()));
         }
-        if (accessChecker.hasAccess(OrdersView.class)) {
-            nav.addItem(new SideNavItem("Заказы", OrdersView.class, LineAwesomeIcon.EDIT_SOLID.create()));
-        }
         if (accessChecker.hasAccess(CompactOrdersView.class)) {
-            nav.addItem(new SideNavItem("Таблица заказов", CompactOrdersView.class, LineAwesomeIcon.TABLE_SOLID.create()));
+            nav.addItem(new SideNavItem("Заказы", CompactOrdersView.class, LineAwesomeIcon.EDIT_SOLID.create()));
         }
         if (accessChecker.hasAccess(AmountView.class)) {
             nav.addItem(new SideNavItem("Остатки блюд", AmountView.class, LineAwesomeIcon.BOX_SOLID.create()));
