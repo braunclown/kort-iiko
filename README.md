@@ -6,7 +6,7 @@ Kört-iiko &ndash; это интегрированное с iiko веб-прил
 ## Запуск приложения в режиме разработчика
 
 Приложение представляет собой обычный Maven-проект. Чтобы запустить его, 
-задайте настройки в файле [application.properties](src/main/resources/application.properties) 
+задайте настройки в файле [`application.properties`](src/main/resources/application.properties) 
 (см. пункт 4 в разделе "Развёртывание")
 и, находясь в папке проекта, введите в командной строке `mvnw` (Windows cmd) или `./mvnw` (Mac, Linux, Windows PowerShell), 
 а затем откройте https://localhost:8443 в браузере.
