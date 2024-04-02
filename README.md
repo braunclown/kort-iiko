@@ -9,7 +9,7 @@ Kört-iiko &ndash; это интегрированное с iiko веб-прил
 задайте настройки в файле [application.properties](src/main/resources/application.properties) 
 (см. пункт 4 в разделе "Развёртывание")
 и, находясь в папке проекта, введите в командной строке `mvnw` (Windows cmd) или `./mvnw` (Mac, Linux, Windows PowerShell), 
-а затем откройте http://localhost:8080 в браузере.
+а затем откройте https://localhost:8443 в браузере.
 
 Как и любой Maven-проект, Kört-iiko можно открыть в популярных IDE. 
 Подробнее по ссылке: [Как импортировать Vaadin-приложения в различные IDE](https://vaadin.com/docs/latest/guide/step-by-step/importing) (Eclipse, IntelliJ IDEA, NetBeans и VS Code).
@@ -42,7 +42,7 @@ auth - Авторизоваться как админ
 
 ### 4. Создайте конфигурационный файл
 4.1. В папке, где находится JAR-файл, создайте папку `config` 
-и положите в неё файл [application.properties](src/main/resources/application.properties);\
+и положите в неё файл [`application.properties`](src/main/resources/application.properties);\
 4.2. Настройте ваше приложение, указав в файле `application.properties` значения следующих параметров:
 
 | Параметр                      | Значение                                                                                        |
