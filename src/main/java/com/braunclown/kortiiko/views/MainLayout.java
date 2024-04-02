@@ -3,7 +3,7 @@ package com.braunclown.kortiiko.views;
 import com.braunclown.kortiiko.data.User;
 import com.braunclown.kortiiko.security.AuthenticatedUser;
 import com.braunclown.kortiiko.views.amount.AmountView;
-import com.braunclown.kortiiko.views.compactorders.CompactOrdersView;
+import com.braunclown.kortiiko.views.orders.CompactOrdersView;
 import com.braunclown.kortiiko.views.daytype.DayTypeView;
 import com.braunclown.kortiiko.views.dishes.DishesView;
 import com.braunclown.kortiiko.views.main.MainView;

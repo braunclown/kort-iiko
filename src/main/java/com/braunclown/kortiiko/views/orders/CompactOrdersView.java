@@ -1,4 +1,4 @@
-package com.braunclown.kortiiko.views.compactorders;
+package com.braunclown.kortiiko.views.orders;
 
 import com.braunclown.kortiiko.data.CookOrder;
 import com.braunclown.kortiiko.data.Period;
@@ -8,8 +8,6 @@ import com.braunclown.kortiiko.services.DishService;
 import com.braunclown.kortiiko.services.PeriodService;
 import com.braunclown.kortiiko.services.telegram.KortiikoBot;
 import com.braunclown.kortiiko.views.MainLayout;
-import com.braunclown.kortiiko.views.orders.SimpleTimer;
-import com.braunclown.kortiiko.views.orders.UnableToCookDialog;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;

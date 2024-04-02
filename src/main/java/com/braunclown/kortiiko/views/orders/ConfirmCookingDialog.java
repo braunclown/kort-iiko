@@ -1,4 +1,4 @@
-package com.braunclown.kortiiko.views.compactorders;
+package com.braunclown.kortiiko.views.orders;
 
 import com.braunclown.kortiiko.components.ErrorNotification;
 import com.braunclown.kortiiko.data.CookOrder;
